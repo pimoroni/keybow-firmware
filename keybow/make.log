@@ -1,0 +1,53 @@
+cc  keybow.c gadget-hid.c -static -lconfig -lusbgx -lbcm2835 -o keybow
+//usr/local/lib/libusbgx.a(libusbgx_la-usbg.o): In function `usbg_free_gadget':
+/home/pi/Development/keybow-static/libusbgx/src/usbg.c:297: undefined reference to `config_destroy'
+//usr/local/lib/libusbgx.a(libusbgx_la-usbg.o): In function `usbg_free_state':
+/home/pi/Development/keybow-static/libusbgx/src/usbg.c:341: undefined reference to `config_destroy'
+//usr/local/lib/libusbgx.a(libusbgx_la-ms.o): In function `ms_libconfig_export':
+/home/pi/Development/keybow-static/libusbgx/src/function/ms.c:311: undefined reference to `config_setting_add'
+/home/pi/Development/keybow-static/libusbgx/src/function/ms.c:320: undefined reference to `config_setting_add'
+//usr/local/lib/libusbgx.a(libusbgx_la-ms.o): In function `ms_libconfig_import':
+/home/pi/Development/keybow-static/libusbgx/src/function/ms.c:234: undefined reference to `config_setting_get_member'
+/home/pi/Development/keybow-static/libusbgx/src/function/ms.c:245: undefined reference to `config_setting_length'
+/home/pi/Development/keybow-static/libusbgx/src/function/ms.c:248: undefined reference to `config_setting_get_elem'
+//usr/local/lib/libusbgx.a(libusbgx_la-loopback.o): In function `loopback_libconfig_export':
+/home/pi/Development/keybow-static/libusbgx/src/function/loopback.c:70: undefined reference to `config_setting_add'
+/home/pi/Development/keybow-static/libusbgx/src/function/loopback.c:77: undefined reference to `config_setting_set_int'
+//usr/local/lib/libusbgx.a(libusbgx_la-loopback.o): In function `loopback_libconfig_import':
+/home/pi/Development/keybow-static/libusbgx/src/function/loopback.c:96: undefined reference to `config_setting_get_member'
+/home/pi/Development/keybow-static/libusbgx/src/function/loopback.c:100: undefined reference to `config_setting_get_int'
+//usr/local/lib/libusbgx.a(libusbgx_la-hid.o): In function `hid_set_config_node_report':
+/home/pi/Development/keybow-static/libusbgx/src/function/hid.c:150: undefined reference to `config_setting_add'
+//usr/local/lib/libusbgx.a(libusbgx_la-hid.o): In function `hid_get_config_node_report':
+/home/pi/Development/keybow-static/libusbgx/src/function/hid.c:102: undefined reference to `config_setting_get_member'
+/home/pi/Development/keybow-static/libusbgx/src/function/hid.c:109: undefined reference to `config_setting_length'
+/home/pi/Development/keybow-static/libusbgx/src/function/hid.c:124: undefined reference to `config_setting_get_int'
+/home/pi/Development/keybow-static/libusbgx/src/function/hid.c:116: undefined reference to `config_setting_get_elem'
+//usr/local/lib/libusbgx.a(libusbgx_la-usbg_common_libconfig.o): In function `usbg_get_config_node_int':
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:21: undefined reference to `config_setting_get_member'
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:28: undefined reference to `config_setting_get_int'
+//usr/local/lib/libusbgx.a(libusbgx_la-usbg_common_libconfig.o): In function `usbg_get_config_node_bool':
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:40: undefined reference to `config_setting_get_member'
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:50: undefined reference to `config_setting_get_bool'
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:47: undefined reference to `config_setting_get_int'
+//usr/local/lib/libusbgx.a(libusbgx_la-usbg_common_libconfig.o): In function `usbg_get_config_node_string':
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:64: undefined reference to `config_setting_get_member'
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:71: undefined reference to `config_setting_get_string'
+//usr/local/lib/libusbgx.a(libusbgx_la-usbg_common_libconfig.o): In function `usbg_set_config_node_int':
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:99: undefined reference to `config_setting_add'
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:103: undefined reference to `config_setting_set_int'
+//usr/local/lib/libusbgx.a(libusbgx_la-usbg_common_libconfig.o): In function `usbg_set_config_node_int_hex':
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:114: undefined reference to `config_setting_add'
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:118: undefined reference to `config_setting_set_format'
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:122: undefined reference to `config_setting_set_int'
+//usr/local/lib/libusbgx.a(libusbgx_la-usbg_common_libconfig.o): In function `usbg_set_config_node_bool':
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:133: undefined reference to `config_setting_add'
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:137: undefined reference to `config_setting_set_bool'
+//usr/local/lib/libusbgx.a(libusbgx_la-usbg_common_libconfig.o): In function `usbg_set_config_node_string':
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:148: undefined reference to `config_setting_add'
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:152: undefined reference to `config_setting_set_string'
+//usr/local/lib/libusbgx.a(libusbgx_la-usbg_common_libconfig.o): In function `usbg_set_config_node_dev':
+/home/pi/Development/keybow-static/libusbgx/src/usbg_common_libconfig.c:175: undefined reference to `config_setting_add'
+collect2: error: ld returned 1 exit status
+Makefile:3: recipe for target 'keybow' failed
+make: *** [keybow] Error 1
