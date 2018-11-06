@@ -1,5 +1,6 @@
 #include "keybow.h"
 #include "gadget-hid.h"
+#include <signal.h>
 #include <errno.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -10,6 +11,11 @@
 #include <lauxlib.h>
 
 int hid_output;
+int running = 0;
+
+void signal_handler(int dummy) {
+    running = 0;
+}
 
 keybow_key get_key(unsigned short index){
     keybow_key key;
@@ -90,7 +96,9 @@ int main() {
     }
 
     printf("Running...\n");
-    while (1){
+    running = 1;
+    signal(SIGINT, signal_handler);
+    while (running){
         updateKeys();
         usleep(1000);
         //usleep(250000);

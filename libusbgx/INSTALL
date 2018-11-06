@@ -1,0 +1,13 @@
+Prerequisites:
+
+- autoconf
+- libtool
+- libconfig-dev
+
+Installing libusbgx:
+
+$ autoreconf -i
+$ ./configure
+$ make
+$ make doxygen-doc [optional]
+$ make install
