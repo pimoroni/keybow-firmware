@@ -278,7 +278,7 @@ int initLUA() {
 
   
     int status;
-    status = luaL_loadfile(L, "keys.lua");
+    status = luaL_loadfile(L, "/boot/keys.lua");
     if(status) {
         printf("Couldn't load keys.lua: %s\n", lua_tostring(L, -1));
         return 1;

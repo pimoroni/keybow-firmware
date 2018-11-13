@@ -1,5 +1,6 @@
 #include "keybow.h"
 #include "gadget-hid.h"
+#include "lights.h"
 #include <signal.h>
 #include <errno.h>
 #include <stdio.h>
@@ -95,10 +96,16 @@ int main() {
         last_state[x] = 0;
     }
 
+    initLights();
+    read_png_file("/boot/default.png");
+
     printf("Running...\n");
     running = 1;
     signal(SIGINT, signal_handler);
     while (running){
+        int delta = (millis() / (1000/60)) % height;
+        lights_drawPngFrame(delta);
+        lights_show();
         updateKeys();
         usleep(1000);
         //usleep(250000);
