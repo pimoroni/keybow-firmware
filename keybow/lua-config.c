@@ -249,7 +249,7 @@ static int l_load_pattern(lua_State *L) {
     const char *pattern = luaL_checklstring(L, 1, &length);
 
     char filename[length + 10];
-    sprintf(filename, "/boot/%s.png", pattern);
+    sprintf(filename, "%s.png", pattern);
 
     pthread_mutex_lock(&lights_mutex);
     int result = read_png_file(filename);
@@ -331,7 +331,7 @@ int initLUA() {
 
   
     int status;
-    status = luaL_loadfile(L, "/boot/keys.lua");
+    status = luaL_loadfile(L, "keys.lua");
     if(status) {
         printf("Couldn't load keys.lua: %s\n", lua_tostring(L, -1));
         return 1;

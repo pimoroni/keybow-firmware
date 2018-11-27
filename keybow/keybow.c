@@ -1,5 +1,13 @@
 #include "keybow.h"
+
+#ifndef KEYBOW_NO_USB_HID
 #include "gadget-hid.h"
+#endif
+
+#ifndef KEYBOW_HOME
+#define KEYBOW_HOME "/boot/"
+#endif
+
 #include "lights.h"
 #include <signal.h>
 #include <errno.h>
@@ -10,6 +18,7 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
+#include <unistd.h>
 
 int hid_output;
 int running = 0;
@@ -91,6 +100,7 @@ void *run_lights(void *void_ptr){
 
 int main() {
     int ret;
+    chdir(KEYBOW_HOME);
 
     pthread_mutex_init ( &lights_mutex, NULL );
 
@@ -112,6 +122,7 @@ int main() {
         return 1;
     }
 
+#ifndef KEYBOW_NO_USB_HID
     ret = initUSB();
     //if (ret != 0 && ret != USBG_ERROR_EXIST) {
     //    return 1;
@@ -124,6 +135,14 @@ int main() {
         printf("Error opening /dev/hidg0 for writing.\n");
         return 1;
     }
+#else
+    printf("Opening /dev/null for output.\n");
+    hid_output = open("/dev/null", O_WRONLY);
+#endif
+
+#ifdef KEYBOW_DEBUG
+    printf("Initializing LUA\n");
+#endif
 
     ret = initLUA();
     if (ret != 0){
@@ -136,8 +155,12 @@ int main() {
     }
 
     lights_auto = 1;
+
+#ifdef KEYBOW_DEBUG
+    printf("Initializing Lights\n");
+#endif
     initLights();
-    read_png_file("/boot/default.png");
+    read_png_file("default.png");
 
     printf("Running...\n");
     running = 1;
