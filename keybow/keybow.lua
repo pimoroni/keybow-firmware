@@ -2,8 +2,8 @@ keybow = {}
 
 --local SHIFTED_KEYS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!\"£$%^&*()_+{}:@~<>?|"
 
-local KEYCODES         = "abcdefghijklmnopqrstuvwxyz1234567890\n\a\b\t-=[]\\#;'`,./"
-local SHIFTED_KEYCODES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()\a\a\a\a_+{}|~:\"<>?"
+local KEYCODES         = "abcdefghijklmnopqrstuvwxyz1234567890\n\a\b\t -=[]\\#;'`,./"
+local SHIFTED_KEYCODES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()\a\a\a\a\a_+{}|~:\"~<>?"
 
 keybow.LEFT_CTRL = 0
 keybow.LEFT_SHIFT = 1
@@ -59,6 +59,8 @@ function keybow.text(text)
         local c = text:sub(i, i)
         keybow.tap_key(c)
     end
+
+    keybow.set_modifier(keybow.LEFT_SHIFT, false)
 end
 
 -- Lighting control
@@ -88,7 +90,7 @@ end
 
 function keybow.tap_right_ctrl()
     keybow.set_modifier(keybow.RIGHT_CTRL, keybow.KEY_DOWN)
-    keybow.set_modifier(KEYBOW.RIGHT_CTRL, keybow.KEY_UP)
+    keybow.set_modifier(keybow.RIGHT_CTRL, keybow.KEY_UP)
 end
 
 function keybow.tap_left_shift()
@@ -98,7 +100,7 @@ end
 
 function keybow.tap_right_shift()
     keybow.set_modifier(keybow.RIGHT_SHIFT, keybow.KEY_DOWN)
-    keybow.set_modifier(KEYBOW.RIGHT_SHIFT, keybow.KEY_UP)
+    keybow.set_modifier(keybow.RIGHT_SHIFT, keybow.KEY_UP)
 end
 
 function keybow.tap_left_alt()
@@ -108,7 +110,7 @@ end
 
 function keybow.tap_right_alt()
     keybow.set_modifier(keybow.RIGHT_ALT, keybow.KEY_DOWN)
-    keybow.set_modifier(KEYBOW.RIGHT_ALT, keybow.KEY_UP)
+    keybow.set_modifier(keybow.RIGHT_ALT, keybow.KEY_UP)
 end
 
 function keybow.tap_left_meta()
@@ -118,7 +120,7 @@ end
 
 function keybow.tap_right_meta()
     keybow.set_modifier(keybow.RIGHT_META, keybow.KEY_DOWN)
-    keybow.set_modifier(KEYBOW.RIGHT_META, keybow.KEY_UP)
+    keybow.set_modifier(keybow.RIGHT_META, keybow.KEY_UP)
 end
 
 -- Function keys
@@ -165,9 +167,7 @@ function keybow.set_key(key, pressed)
         if not (hid_code == nil) then
             hid_code = hid_code + 3
             print(key, shifted, hid_code)
-            if pressed then
-                keybow.set_modifier(keybow.LEFT_SHIFT, shifted)
-            end
+            if shifted then keybow.set_modifier(keybow.LEFT_SHIFT, pressed) end
             keybow_set_key(hid_code, pressed)
         end
 

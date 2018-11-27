@@ -83,8 +83,8 @@ static int l_set_modifier(lua_State *L) {
     unsigned short current = (modifiers & (1 << index)) > 0;
     if(current != state){
         modifiers &= ~(1 << index);
-	modifiers |= (state << index);
-	printf("Modifier %d set to %d\n", index, state);
+        modifiers |= (state << index);
+        printf("Modifier %d set to %d\n", index, state);
         sendHIDReport();
     }
 
