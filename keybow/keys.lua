@@ -1,7 +1,8 @@
 require "keybow"
 
 function handle_key_00 (pressed)
-    keybow.set_key(0x27, pressed)
+    keybow.set_key("0", pressed)
+    keybow.load_pattern("test-4x3")
 end
 
 function handle_key_01 (pressed)
@@ -24,7 +25,7 @@ function handle_key_02 (pressed)
 end
 
 function handle_key_03 (pressed)
-    keybow.set_key(0x1e, pressed)
+    keybow.set_key("1", pressed)
     keybow.auto_lights(not pressed)
     if pressed then
         keybow.clear_lights()
@@ -33,7 +34,7 @@ function handle_key_03 (pressed)
 end
 
 function handle_key_04 (pressed)
-    keybow.set_key(0x1f, pressed)
+    keybow.set_key("2", pressed)
     keybow.auto_lights(not pressed)
     if pressed then
         keybow.clear_lights()
@@ -42,29 +43,30 @@ function handle_key_04 (pressed)
 end
 
 function handle_key_05 (pressed)
-    keybow.set_key(0x20, pressed)
+    --keybow.set_key("3", pressed)
+    keybow.text("function(){Does this work!?}")
 end
 
 function handle_key_06 (pressed)
-    keybow.set_key(0x21, pressed)
+    keybow.set_key("4", pressed)
 end
 
 function handle_key_07 (pressed)
-    keybow.set_key(0x22, pressed)
+    keybow.set_key("5", pressed)
 end
 
 function handle_key_08 (pressed)
-    keybow.set_key(0x23, pressed)
+    keybow.set_key("6", pressed)
 end
 
 function handle_key_09 (pressed)
-    keybow.set_key(0x24, pressed)
+    keybow.set_key("7", pressed)
 end
 
 function handle_key_10 (pressed)
-    keybow.set_key(0x25, pressed)
+    keybow.set_key("8", pressed)
 end
 
 function handle_key_11 (pressed)
-    keybow.set_key(0x26, pressed)
+    keybow.set_key("9", pressed)
 end

@@ -227,6 +227,9 @@ int initLUA() {
         return 1;
     }
     status = lua_pcall(L, 0, LUA_MULTRET, 0);
+    if(status) {
+        printf("Runtime Error: %s\n", lua_tostring(L, -1));
+    }
 
     return 0;
 }
