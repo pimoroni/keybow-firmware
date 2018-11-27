@@ -17,3 +17,4 @@ static int l_release_key (lua_State *L);
 int initLUA();
 int luaHandleKey(unsigned short key_index, unsigned short state);
 void luaClose(void);
+void luaCallSetup(void);

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 #define PNG_DEBUG 3
 #include <png.h>
@@ -25,6 +26,7 @@ int x, y;
 int width, height;
 png_byte color_type;
 png_byte bit_depth;
+png_byte color_channels;
 
 png_structp png_ptr;
 png_infop info_ptr;
@@ -37,5 +39,6 @@ void lights_setAll(int r, int g, int b);
 void lights_show();
 void lights_cleanup();
 void lights_drawPngFrame(int frame);
+int read_png_file(char* file_name);
 
 #endif

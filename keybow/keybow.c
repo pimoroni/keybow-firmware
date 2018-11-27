@@ -13,6 +13,9 @@
 
 int hid_output;
 int running = 0;
+int key_index = 0;
+
+pthread_t t_run_lights;
 
 void signal_handler(int dummy) {
     running = 0;
@@ -25,6 +28,13 @@ keybow_key get_key(unsigned short index){
     key.hid_code = mapping_table[index + 1];
     key.led_index = mapping_table[index + 2];
     return key;
+}
+
+void add_key(unsigned short gpio_bcm, unsigned short hid_code, unsigned short led_index){
+    mapping_table[(key_index * 3) + 0] = gpio_bcm;
+    mapping_table[(key_index * 3) + 1] = hid_code;
+    mapping_table[(key_index * 3) + 2] = led_index;
+    key_index+=1;
 }
 
 int initGPIO() {
@@ -66,8 +76,37 @@ int updateKeys() {
     //write(hid_output, buf, HID_REPORT_SIZE);
 }
 
+void *run_lights(void *void_ptr){
+    while(running){
+        int delta = (millis() / (1000/60)) % height;
+        if (lights_auto) {
+            pthread_mutex_lock( &lights_mutex );
+            lights_drawPngFrame(delta);
+            pthread_mutex_unlock( &lights_mutex );
+        }
+        lights_show();
+        usleep(16666); // About 60fps
+    }
+}
+
 int main() {
     int ret;
+
+    pthread_mutex_init ( &lights_mutex, NULL );
+
+    add_key(RPI_V2_GPIO_P1_11, 0x27, 3);
+    add_key(RPI_V2_GPIO_P1_13, 0x37, 7);
+    add_key(RPI_V2_GPIO_P1_16, 0x28, 11);
+    add_key(RPI_V2_GPIO_P1_15, 0x1e, 2);
+    add_key(RPI_V2_GPIO_P1_18, 0x1f, 6);
+    add_key(RPI_V2_GPIO_P1_29, 0x20, 10);
+    add_key(RPI_V2_GPIO_P1_31, 0x21, 1);
+    add_key(RPI_V2_GPIO_P1_32, 0x22, 5);
+    add_key(RPI_V2_GPIO_P1_33, 0x23, 9);
+    add_key(RPI_V2_GPIO_P1_38, 0x24, 0);
+    add_key(RPI_V2_GPIO_P1_36, 0x25, 4);
+    add_key(RPI_V2_GPIO_P1_37, 0x26, 8);
+
 
     if (initGPIO() != 0) {
         return 1;
@@ -96,20 +135,33 @@ int main() {
         last_state[x] = 0;
     }
 
+    lights_auto = 1;
     initLights();
     read_png_file("/boot/default.png");
 
     printf("Running...\n");
     running = 1;
     signal(SIGINT, signal_handler);
+
+    luaCallSetup();
+
+    if(pthread_create(&t_run_lights, NULL, run_lights, NULL)) {
+        printf("Error creating lighting thread.\n");
+        return 1;
+    }
+
     while (running){
-        int delta = (millis() / (1000/60)) % height;
-        lights_drawPngFrame(delta);
-        lights_show();
+        /*int delta = (millis() / (1000/60)) % height;
+        if (lights_auto) {
+            lights_drawPngFrame(delta);
+        }
+        lights_show();*/
         updateKeys();
         usleep(1000);
         //usleep(250000);
     }      
+
+    pthread_join(t_run_lights, NULL);
 
     //cleanupUSB();
     bcm2835_close();

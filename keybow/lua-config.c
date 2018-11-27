@@ -1,4 +1,6 @@
 #include "lua-config.h"
+#include "lights.h"
+#include "keybow.h"
 #include "gadget-hid.h"
 
 int isPressed(unsigned short hid_code){
@@ -126,7 +128,7 @@ static int l_tap_enter(lua_State *L) {
 }
 
 static int l_tap_space(lua_State *L) {
-    tapKey(0x27);
+    tapKey(0x2c);
     return 0;
 }
 
@@ -160,6 +162,29 @@ static int l_send_text(lua_State *L) {
         }
     }
     return 0;
+}
+
+static int l_auto_lights(lua_State *L) {
+    unsigned short state = lua_toboolean(L, 1);
+    lights_auto = state;
+    return 0;
+}
+
+static int l_clear_lights(lua_State *L) {
+    lights_setAll(0, 0, 0);
+    return 0;
+}
+
+static int l_set_pixel(lua_State *L) {
+    unsigned short x = luaL_checknumber(L, 1);
+    unsigned short r = luaL_checknumber(L, 2);
+    unsigned short g = luaL_checknumber(L, 3);
+    unsigned short b = luaL_checknumber(L, 4);
+
+    keybow_key key = get_key(x);
+    x = key.led_index;
+
+    lights_setPixel(x, r, g, b);
 }
 
 static int l_set_key(lua_State *L) {
@@ -219,9 +244,37 @@ static int l_release_key (lua_State *L) {
 }
 
 
+static int l_load_pattern(lua_State *L) {
+    size_t length;
+    const char *pattern = luaL_checklstring(L, 1, &length);
+
+    char filename[length + 10];
+    sprintf(filename, "/boot/%s.png", pattern);
+
+    pthread_mutex_lock(&lights_mutex);
+    int result = read_png_file(filename);
+    pthread_mutex_unlock(&lights_mutex);
+    
+    lua_pushboolean(L, result == 0);
+
+    return 1;
+}
+
 int initLUA() {
     L = luaL_newstate();
     luaL_openlibs(L);
+
+    lua_pushcfunction(L, l_set_pixel);
+    lua_setglobal(L, "set_pixel");
+
+    lua_pushcfunction(L, l_auto_lights);
+    lua_setglobal(L, "auto_lights");
+
+    lua_pushcfunction(L, l_clear_lights);
+    lua_setglobal(L, "clear_lights");
+
+    lua_pushcfunction(L, l_load_pattern);
+    lua_setglobal(L, "load_pattern");
 
     lua_pushcfunction(L, l_press_key);
     lua_setglobal(L, "press_key");
@@ -242,16 +295,16 @@ int initLUA() {
     lua_setglobal(L, "usleep");
 
     lua_pushcfunction(L, l_left_ctrl);
-    lua_setglobal(L, "left_ctrl");
+    lua_setglobal(L, "toggle_left_ctrl");
     
     lua_pushcfunction(L, l_left_shift);
-    lua_setglobal(L, "left_shift");
+    lua_setglobal(L, "toggle_left_shift");
 
     lua_pushcfunction(L, l_left_alt);
-    lua_setglobal(L, "left_alt");
+    lua_setglobal(L, "toggle_left_alt");
 
     lua_pushcfunction(L, l_left_meta);
-    lua_setglobal(L, "left_meta");
+    lua_setglobal(L, "toggle_left_meta");
 
 
     lua_pushcfunction(L, l_tap_enter);
@@ -265,16 +318,16 @@ int initLUA() {
 
 
     lua_pushcfunction(L, l_right_ctrl);
-    lua_setglobal(L, "right_ctrl");
+    lua_setglobal(L, "toggle_right_ctrl");
     
     lua_pushcfunction(L, l_right_shift);
-    lua_setglobal(L, "right_shift");
+    lua_setglobal(L, "toggle_right_shift");
 
     lua_pushcfunction(L, l_right_alt);
-    lua_setglobal(L, "right_alt");
+    lua_setglobal(L, "toggle_right_alt");
 
     lua_pushcfunction(L, l_right_meta);
-    lua_setglobal(L, "right_meta");
+    lua_setglobal(L, "toggle_right_meta");
 
   
     int status;
@@ -287,20 +340,29 @@ int initLUA() {
     return 0;
 }
 
-int luaHandleKey(unsigned short key_index, unsigned short key_state) {
-        char fn[14];
-        sprintf(fn, "handle_key_%02d\0", key_index);
-        //printf("Calling: %s\n", fn);
-        lua_getglobal(L, fn);
-        if(lua_isfunction(L, lua_gettop(L))){
-            lua_pushboolean(L, key_state); // State
-            if (lua_pcall(L, 1, 0, 0) != 0){
-                error(L, "error running function `handle_key`: %s", lua_tostring(L, -1));
-            }
-        } else {
-            printf("handle_key_%02d is not defined!\n");
-            return 1;
+void luaCallSetup(void) {
+    lua_getglobal(L, "setup");
+    if(lua_isfunction(L, lua_gettop(L))){
+        if(lua_pcall(L, 0, 0, 0) != 0){
+            error(L, "error running function `setup`: %s", lua_tostring(L, -1));
         }
+    }
+}
+
+int luaHandleKey(unsigned short key_index, unsigned short key_state) {
+    char fn[14];
+    sprintf(fn, "handle_key_%02d\0", key_index);
+    //printf("Calling: %s\n", fn);
+    lua_getglobal(L, fn);
+    if(lua_isfunction(L, lua_gettop(L))){
+        lua_pushboolean(L, key_state); // State
+        if (lua_pcall(L, 1, 0, 0) != 0){
+            error(L, "error running function `handle_key`: %s", lua_tostring(L, -1));
+        }
+    } else {
+        printf("handle_key_%02d is not defined!\n");
+        return 1;
+    }
 }
 
 void luaClose(void){

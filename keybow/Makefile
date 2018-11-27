@@ -1,4 +1,4 @@
-keybow: CFLAGS+=-static -I../lua-5.3.5/src -L/lib -L../lua-5.3.5/src -lpng -lz -llua -lm -lusbgx -lconfig -lbcm2835
+keybow: CFLAGS+=-static -I../lua-5.3.5/src -L/lib -L../lua-5.3.5/src -lpng -lz -lpthread -llua -lm -lusbgx -lconfig -lbcm2835
 keybow: keybow.c lights.c lua-config.c gadget-hid.c
 	$(CC)  $^ $(CFLAGS) -o $@
 
