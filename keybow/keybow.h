@@ -1,5 +1,7 @@
 #include <bcm2835.h>
 #include <pthread.h>
+#include "lights.h"
+#include "lua-config.h"
 
 #define NUM_KEYS 12
 

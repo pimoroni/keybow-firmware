@@ -6,10 +6,12 @@
 #include <lualib.h>
 #include <lauxlib.h>
 
+#pragma once
+
 int hid_output;
 lua_State* L;
 
-unsigned short modifiers = 0;
+unsigned short modifiers;
 unsigned short pressed_keys[14];
 
 static int l_press_key (lua_State *L);

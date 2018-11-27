@@ -44,7 +44,7 @@ void sendHIDReport(){
     for(x = 2; x < 16; x++){
         buf[x] = pressed_keys[x-2];
     }
-    write(hid_output, buf, HID_REPORT_SIZE); 
+    write(hid_output, buf, HID_REPORT_SIZE);
     usleep(1000);
 }
 
@@ -69,67 +69,27 @@ static int l_sleep(lua_State *L) {
     usleep(t * 1000);
 }
 
-static int l_left_ctrl(lua_State *L) {
-    lua_pushboolean(L, toggleModifier(0));
+static int l_get_modifier(lua_State *L) {
+    unsigned short index = luaL_checknumber(L, 1);
+    unsigned short current = (modifiers & (1 << index)) > 0;
+    lua_pushboolean(L, current);
     return 1;
 }
 
-static int l_left_shift(lua_State *L) {
-    lua_pushboolean(L, toggleModifier(1));
+static int l_set_modifier(lua_State *L) {
+    unsigned short index = luaL_checknumber(L, 1);
+    unsigned short state = lua_toboolean(L, 2);
+
+    unsigned short current = (modifiers & (1 << index)) > 0;
+    if(current != state){
+        modifiers &= ~(1 << index);
+	modifiers |= (state << index);
+	printf("Modifier %d set to %d\n", index, state);
+        sendHIDReport();
+    }
+
+    lua_pushboolean(L, current != state);
     return 1;
-}
-
-static int l_left_alt(lua_State *L) {
-    lua_pushboolean(L, toggleModifier(2));
-    return 1;
-}
-
-static int l_left_meta(lua_State *L) {
-    lua_pushboolean(L, toggleModifier(3));
-    return 1;
-}
-
-static int l_right_ctrl(lua_State *L) {
-    lua_pushboolean(L, toggleModifier(4));
-    return 1;
-}
-
-static int l_right_shift(lua_State *L) {
-    lua_pushboolean(L, toggleModifier(5));
-    return 1;
-}
-
-static int l_right_alt(lua_State *L) {
-    lua_pushboolean(L, toggleModifier(6));
-    return 1;
-}
-
-static int l_right_meta(lua_State *L) {
-    lua_pushboolean(L, toggleModifier(7));
-    return 1;
-}
-
-static int l_tap_left_meta(lua_State *L) {
-    toggleModifier(3);
-    toggleModifier(3);
-    return 0;
-}
-
-void tapKey(hid_code) {
-    pressKey(hid_code);
-    sendHIDReport();
-    releaseKey(hid_code);
-    sendHIDReport();
-}
-
-static int l_tap_enter(lua_State *L) {
-    tapKey(0x28);
-    return 0;
-}
-
-static int l_tap_space(lua_State *L) {
-    tapKey(0x2c);
-    return 0;
 }
 
 static int l_send_text(lua_State *L) {
@@ -142,7 +102,7 @@ static int l_send_text(lua_State *L) {
         int code = message[x];
         if (code == 48){hid_code = 39;}
         if (code == 32){hid_code = 44;}
-        if (code >= 49 && code <= 47){
+        if (code >= 49 && code <= 57){
             hid_code = code - 19;
         }
         if (code >= 65 && code <= 90){
@@ -211,39 +171,6 @@ static int l_set_key(lua_State *L) {
     return 1;
 }
 
-static int l_press_key (lua_State *L) {
-    unsigned short hid_code = luaL_checknumber(L, 1); // Get argument
-    printf("l_press_key %02x\n", hid_code);
-    if(!isPressed(hid_code)){
-        pressKey(hid_code);
-        lua_pushboolean(L, 1);
-        printf("Key %d pushed\n", hid_code);
-        sendHIDReport();
-    }
-    else
-    {
-        lua_pushboolean(L, 0);
-    }
-    return 1; // Return count of returned arguments
-}
-
-static int l_release_key (lua_State *L) {
-    unsigned short hid_code = luaL_checknumber(L, 1); // Get argument
-    printf("l_release_key %02x\n", hid_code);
-
-    if(releaseKey(hid_code)){
-        lua_pushboolean(L, 1);
-        printf("Key %d released\n", hid_code);
-        sendHIDReport();
-    }
-    else
-    {
-        lua_pushboolean(L, 0);
-    }
-    return 1; // Return count of returned arguments
-}
-
-
 static int l_load_pattern(lua_State *L) {
     size_t length;
     const char *pattern = luaL_checklstring(L, 1, &length);
@@ -261,74 +188,37 @@ static int l_load_pattern(lua_State *L) {
 }
 
 int initLUA() {
+    modifiers = 0;
+
     L = luaL_newstate();
     luaL_openlibs(L);
 
     lua_pushcfunction(L, l_set_pixel);
-    lua_setglobal(L, "set_pixel");
+    lua_setglobal(L, "keybow_set_pixel");
 
     lua_pushcfunction(L, l_auto_lights);
-    lua_setglobal(L, "auto_lights");
+    lua_setglobal(L, "keybow_auto_lights");
 
     lua_pushcfunction(L, l_clear_lights);
-    lua_setglobal(L, "clear_lights");
+    lua_setglobal(L, "keybow_clear_lights");
 
     lua_pushcfunction(L, l_load_pattern);
-    lua_setglobal(L, "load_pattern");
-
-    lua_pushcfunction(L, l_press_key);
-    lua_setglobal(L, "press_key");
-
-    lua_pushcfunction(L, l_release_key);
-    lua_setglobal(L, "release_key");
+    lua_setglobal(L, "keybow_load_pattern");
 
     lua_pushcfunction(L, l_set_key);
-    lua_setglobal(L, "set_key");
+    lua_setglobal(L, "keybow_set_key");
 
     lua_pushcfunction(L, l_send_text);
-    lua_setglobal(L, "text");
+    lua_setglobal(L, "keybow_text");
 
     lua_pushcfunction(L, l_sleep);
-    lua_setglobal(L, "sleep");
+    lua_setglobal(L, "keybow_sleep");
 
     lua_pushcfunction(L, l_usleep);
-    lua_setglobal(L, "usleep");
+    lua_setglobal(L, "keybow_usleep");
 
-    lua_pushcfunction(L, l_left_ctrl);
-    lua_setglobal(L, "toggle_left_ctrl");
-    
-    lua_pushcfunction(L, l_left_shift);
-    lua_setglobal(L, "toggle_left_shift");
-
-    lua_pushcfunction(L, l_left_alt);
-    lua_setglobal(L, "toggle_left_alt");
-
-    lua_pushcfunction(L, l_left_meta);
-    lua_setglobal(L, "toggle_left_meta");
-
-
-    lua_pushcfunction(L, l_tap_enter);
-    lua_setglobal(L, "tap_enter");
-
-    lua_pushcfunction(L, l_tap_space);
-    lua_setglobal(L, "tap_space");
-
-    lua_pushcfunction(L, l_tap_left_meta);
-    lua_setglobal(L, "tap_left_meta");
-
-
-    lua_pushcfunction(L, l_right_ctrl);
-    lua_setglobal(L, "toggle_right_ctrl");
-    
-    lua_pushcfunction(L, l_right_shift);
-    lua_setglobal(L, "toggle_right_shift");
-
-    lua_pushcfunction(L, l_right_alt);
-    lua_setglobal(L, "toggle_right_alt");
-
-    lua_pushcfunction(L, l_right_meta);
-    lua_setglobal(L, "toggle_right_meta");
-
+    lua_pushcfunction(L, l_set_modifier);
+    lua_setglobal(L, "keybow_set_modifier");
   
     int status;
     status = luaL_loadfile(L, "keys.lua");
@@ -337,6 +227,7 @@ int initLUA() {
         return 1;
     }
     status = lua_pcall(L, 0, LUA_MULTRET, 0);
+
     return 0;
 }
 
