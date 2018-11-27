@@ -35,8 +35,8 @@ keybow.F10 = 0x43
 keybow.F11 = 0x44
 keybow.F12 = 0x45
 
-keybow.KEY_DOWN = 1
-keybow.KEY_UP = 0
+keybow.KEY_DOWN = true
+keybow.KEY_UP = false
 
 -- Functions exposed from C
 
@@ -53,7 +53,7 @@ function keybow.usleep(time)
 end
 
 function keybow.text(text)
-    print("Text: " .. text)
+    --print("Text: " .. text)
 
     for i = 1, #text do        
         local c = text:sub(i, i)
@@ -166,7 +166,7 @@ function keybow.set_key(key, pressed)
 
         if not (hid_code == nil) then
             hid_code = hid_code + 3
-            print(key, shifted, hid_code)
+            --print(key, shifted, hid_code)
             if shifted then keybow.set_modifier(keybow.LEFT_SHIFT, pressed) end
             keybow_set_key(hid_code, pressed)
         end

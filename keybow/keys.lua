@@ -44,7 +44,9 @@ end
 
 function handle_key_05 (pressed)
     --keybow.set_key("3", pressed)
-    keybow.text("function(){Does this work!?}")
+    if pressed then
+        keybow.text("function(){Does this work!?}")
+    end
 end
 
 function handle_key_06 (pressed)

@@ -80,11 +80,19 @@ static int l_set_modifier(lua_State *L) {
     unsigned short index = luaL_checknumber(L, 1);
     unsigned short state = lua_toboolean(L, 2);
 
+
     unsigned short current = (modifiers & (1 << index)) > 0;
+
+#ifdef KEYBOW_DEBUG
+    printf("Modifier %d requested to %d, current: %d\n", index, state, current);
+#endif
+
     if(current != state){
         modifiers &= ~(1 << index);
         modifiers |= (state << index);
+#ifdef KEYBOW_DEBUG
         printf("Modifier %d set to %d\n", index, state);
+#endif
         sendHIDReport();
     }
 
