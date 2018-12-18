@@ -1,5 +1,7 @@
 # Keybow
 
+[Buy Keybow here](https://shop.pimoroni.com/products/keybow)
+
 Keybow is an easy-to-build, solderless, DIY mini mechanical keyboard, Raspberry Pi-powered, with twelve illuminated keys, hot-swap clicky or linear switches, clear keycaps, and awesome customisable layouts and macros. It's the ultimate macro pad.
 
 ## Using the Keybow software
