@@ -2,7 +2,15 @@ MIT License
 
 Copyright (c) 2018 Pimoroni Ltd.
 
-This license applies to the keybow software only.
+The MIT license applies to the keybow software only, IE:
+
+* The "keybow" executable file (source provided in the keybow directory)
+* The "keys.lua" and related lua scripts
+* The "*.png" example animation images
+
+Boot files on the initrd are sourced from - https://github.com/raspberrypi/firmware under the terms detailed in LICENSE.broadcom
+
+Linux kernel.img and initrd are built from Raspbian source and packages - https://github.com/raspberrypi/linux using https://github.com/ali1234/rpi-ramdisk
 
 bcm2835-1.57 and libusbgx are supplied under GPL v2.
 
