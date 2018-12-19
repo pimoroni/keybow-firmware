@@ -18,7 +18,7 @@ sapien, dignissim at semper sit amet, volutpat sit amet dolor. Cras et purus
 pretium nisl laoreet venenatis quis nec nisl. Cras aliquet id nisi vitae porta.
 ]])
     end
-endch
+end
 
 function handle_key_01(pressed) -- Bacon Ipsum
     if pressed then
