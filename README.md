@@ -4,7 +4,7 @@
 
 Keybow is an easy-to-build, solderless, DIY mini mechanical keyboard, Raspberry Pi-powered, with twelve illuminated keys, hot-swap clicky or linear switches, clear keycaps, and awesome customisable layouts and macros. It's the ultimate macro pad.
 
-This Keybow OS is RAM-disk-based and built upon piCore Linux, with C bindings that setup and run the USB HID, and a series of Lua-based scripts to customise the key layouts and lighting.
+This Keybow OS is RAM-disk-based and built upon a stripped-down Raspbian, with C bindings that setup and run the USB HID, and a series of Lua-based scripts to customise the key layouts and lighting.
 
 ## Using the Keybow software
 
