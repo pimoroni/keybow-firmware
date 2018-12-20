@@ -2,11 +2,6 @@ require "keybow"
 
 -- Standard number pad mapping --
 
-function setup()
-    local pattern = require "patterns/static-tropical.png"
-    keybow.load_pattern(pattern)
-end
-
 -- Key mappings --
 
 function handle_key_00(pressed)
