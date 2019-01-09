@@ -19,6 +19,7 @@ typedef struct keybow_key {
 
 unsigned short mapping_table[36];
 
+void *run_lights(void *void_ptr);
 keybow_key get_key(unsigned short index);
 int initUSB();
 int initGPIO();

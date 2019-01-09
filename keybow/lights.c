@@ -18,7 +18,7 @@ void abort_(const char * s, ...)
 
 int read_png_file(char* file_name)
 {
-    char header[8];    // 8 is the maximum size that can be checked
+    unsigned char header[8];    // 8 is the maximum size that can be checked
 
     /* open file and test for it being a png */
     FILE *fp = fopen(file_name, "rb");
@@ -99,6 +99,8 @@ int initLights() {
     for(x = BUF_SIZE - SOF_BYTES; x < BUF_SIZE; x++){
         buf[x] = 255;
     }
+
+    return 0;
 }
 
 void lights_setPixel(int x, int r, int g, int b){
@@ -117,7 +119,6 @@ void lights_setAll(int r, int g, int b){
 }
 
 void lights_show(){
-    int x;
     bcm2835_spi_writenb(buf, BUF_SIZE);
     usleep(MIN_DELAY_US);
 }

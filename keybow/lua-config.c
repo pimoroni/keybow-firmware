@@ -57,29 +57,40 @@ int toggleModifier(unsigned short modifier) {
         modifiers |= (1 << modifier);
     }
     sendHIDReport();
+
+    return (modifiers & (1 << modifier)) > 0;
 }
 
 static int l_usleep(lua_State *L) {
+    int nargs = lua_gettop(L);
     int t = luaL_checknumber(L, 1);
+    lua_remove(L, nargs);
     usleep(t);
+    return 0;
 }
 
 static int l_sleep(lua_State *L) {
+    int nargs = lua_gettop(L);
     int t = luaL_checknumber(L, 1);
+    lua_remove(L, nargs);
     usleep(t * 1000);
+    return 0;
 }
 
 static int l_get_modifier(lua_State *L) {
+    int nargs = lua_gettop(L);
     unsigned short index = luaL_checknumber(L, 1);
     unsigned short current = (modifiers & (1 << index)) > 0;
+    lua_remove(L, nargs);
     lua_pushboolean(L, current);
     return 1;
 }
 
 static int l_set_modifier(lua_State *L) {
+    int nargs = lua_gettop(L);
     unsigned short index = luaL_checknumber(L, 1);
     unsigned short state = lua_toboolean(L, 2);
-
+    lua_remove(L, nargs);
 
     unsigned short current = (modifiers & (1 << index)) > 0;
 
@@ -101,8 +112,10 @@ static int l_set_modifier(lua_State *L) {
 }
 
 static int l_send_text(lua_State *L) {
+    int nargs = lua_gettop(L);
     size_t length;
     const char *message = luaL_checklstring(L, 1, &length);
+    lua_remove(L, nargs);
     int x = 0;
     for(x = 0; x < length; x++){
         int hid_code = 0;
@@ -133,31 +146,41 @@ static int l_send_text(lua_State *L) {
 }
 
 static int l_auto_lights(lua_State *L) {
+    int nargs = lua_gettop(L);
     unsigned short state = lua_toboolean(L, 1);
+    lua_remove(L, nargs);
     lights_auto = state;
     return 0;
 }
 
 static int l_clear_lights(lua_State *L) {
+    int nargs = lua_gettop(L);
     lights_setAll(0, 0, 0);
+    lua_remove(L, nargs);
     return 0;
 }
 
 static int l_set_pixel(lua_State *L) {
+    int nargs = lua_gettop(L);
     unsigned short x = luaL_checknumber(L, 1);
     unsigned short r = luaL_checknumber(L, 2);
     unsigned short g = luaL_checknumber(L, 3);
     unsigned short b = luaL_checknumber(L, 4);
+    lua_remove(L, nargs);
 
     keybow_key key = get_key(x);
     x = key.led_index;
 
     lights_setPixel(x, r, g, b);
+    return 0;
 }
 
 static int l_set_key(lua_State *L) {
+    int nargs = lua_gettop(L);
     unsigned short hid_code = luaL_checknumber(L, 1);
     unsigned short state = lua_toboolean(L, 2);
+    lua_remove(L, nargs);
+
     printf("l_set_key %02x %d\n", hid_code, state);
     if(state){
         if(!isPressed(hid_code)){
@@ -180,8 +203,10 @@ static int l_set_key(lua_State *L) {
 }
 
 static int l_load_pattern(lua_State *L) {
+    int nargs = lua_gettop(L);
     size_t length;
     const char *pattern = luaL_checklstring(L, 1, &length);
+    lua_remove(L, nargs);
 
     char filename[length + 10];
     sprintf(filename, "%s.png", pattern);
@@ -246,25 +271,26 @@ void luaCallSetup(void) {
     lua_getglobal(L, "setup");
     if(lua_isfunction(L, lua_gettop(L))){
         if(lua_pcall(L, 0, 0, 0) != 0){
-            error(L, "error running function `setup`: %s", lua_tostring(L, -1));
+            printf("Error running function `setup`: %s", lua_tostring(L, -1));
         }
     }
 }
 
 int luaHandleKey(unsigned short key_index, unsigned short key_state) {
     char fn[14];
-    sprintf(fn, "handle_key_%02d\0", key_index);
+    sprintf(fn, "handle_key_%02d", key_index);
     //printf("Calling: %s\n", fn);
     lua_getglobal(L, fn);
     if(lua_isfunction(L, lua_gettop(L))){
         lua_pushboolean(L, key_state); // State
         if (lua_pcall(L, 1, 0, 0) != 0){
-            error(L, "error running function `handle_key`: %s", lua_tostring(L, -1));
+            printf("Error running function `handle_key`: %s", lua_tostring(L, -1));
         }
     } else {
-        printf("handle_key_%02d is not defined!\n");
+        printf("handle_key_%02d is not defined!\n", key_index);
         return 1;
     }
+    return 0;
 }
 
 void luaClose(void){

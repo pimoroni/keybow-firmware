@@ -83,6 +83,7 @@ int updateKeys() {
     }
     printf("\n");*/
     //write(hid_output, buf, HID_REPORT_SIZE);
+    return 0;
 }
 
 void *run_lights(void *void_ptr){

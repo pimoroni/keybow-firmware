@@ -2,3 +2,6 @@
 *.a
 *.so
 keybow/keybow
+keybow/keybow-test
+src/lua
+src/luac
