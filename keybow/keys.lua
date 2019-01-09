@@ -1,7 +1,7 @@
 require "keybow"
 
-function tick()
-
+function tick(t)
+    print(t)
 end
 
 -- Standard number pad mapping --
