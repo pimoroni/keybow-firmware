@@ -64,7 +64,7 @@ int toggleModifier(unsigned short modifier) {
 static int l_usleep(lua_State *L) {
     int nargs = lua_gettop(L);
     int t = luaL_checknumber(L, 1);
-    lua_remove(L, nargs);
+    lua_pop(L, nargs);
     usleep(t);
     return 0;
 }
@@ -72,7 +72,7 @@ static int l_usleep(lua_State *L) {
 static int l_sleep(lua_State *L) {
     int nargs = lua_gettop(L);
     int t = luaL_checknumber(L, 1);
-    lua_remove(L, nargs);
+    lua_pop(L, nargs);
     usleep(t * 1000);
     return 0;
 }
@@ -81,7 +81,7 @@ static int l_get_modifier(lua_State *L) {
     int nargs = lua_gettop(L);
     unsigned short index = luaL_checknumber(L, 1);
     unsigned short current = (modifiers & (1 << index)) > 0;
-    lua_remove(L, nargs);
+    lua_pop(L, nargs);
     lua_pushboolean(L, current);
     return 1;
 }
@@ -90,7 +90,7 @@ static int l_set_modifier(lua_State *L) {
     int nargs = lua_gettop(L);
     unsigned short index = luaL_checknumber(L, 1);
     unsigned short state = lua_toboolean(L, 2);
-    lua_remove(L, nargs);
+    lua_pop(L, nargs);
 
     unsigned short current = (modifiers & (1 << index)) > 0;
 
@@ -115,7 +115,7 @@ static int l_send_text(lua_State *L) {
     int nargs = lua_gettop(L);
     size_t length;
     const char *message = luaL_checklstring(L, 1, &length);
-    lua_remove(L, nargs);
+    lua_pop(L, nargs);
     int x = 0;
     for(x = 0; x < length; x++){
         int hid_code = 0;
@@ -148,7 +148,7 @@ static int l_send_text(lua_State *L) {
 static int l_auto_lights(lua_State *L) {
     int nargs = lua_gettop(L);
     unsigned short state = lua_toboolean(L, 1);
-    lua_remove(L, nargs);
+    lua_pop(L, nargs);
     lights_auto = state;
     return 0;
 }
@@ -156,7 +156,7 @@ static int l_auto_lights(lua_State *L) {
 static int l_clear_lights(lua_State *L) {
     int nargs = lua_gettop(L);
     lights_setAll(0, 0, 0);
-    lua_remove(L, nargs);
+    lua_pop(L, nargs);
     return 0;
 }
 
@@ -166,7 +166,7 @@ static int l_set_pixel(lua_State *L) {
     unsigned short r = luaL_checknumber(L, 2);
     unsigned short g = luaL_checknumber(L, 3);
     unsigned short b = luaL_checknumber(L, 4);
-    lua_remove(L, nargs);
+    lua_pop(L, nargs);
 
     keybow_key key = get_key(x);
     x = key.led_index;
@@ -179,7 +179,7 @@ static int l_set_key(lua_State *L) {
     int nargs = lua_gettop(L);
     unsigned short hid_code = luaL_checknumber(L, 1);
     unsigned short state = lua_toboolean(L, 2);
-    lua_remove(L, nargs);
+    lua_pop(L, nargs);
 
     printf("l_set_key %02x %d\n", hid_code, state);
     if(state){
@@ -206,7 +206,7 @@ static int l_load_pattern(lua_State *L) {
     int nargs = lua_gettop(L);
     size_t length;
     const char *pattern = luaL_checklstring(L, 1, &length);
-    lua_remove(L, nargs);
+    lua_pop(L, nargs);
 
     char filename[length + 10];
     sprintf(filename, "%s.png", pattern);
