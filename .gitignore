@@ -5,3 +5,8 @@ keybow/keybow
 keybow/keybow-test
 src/lua
 src/luac
+bcm2835-*/Makefile
+bcm2835-*/src/Makefile
+bcm2835-*/doc/Makefile
+bcm2835-*/config.h
+bcm2835-*/build
