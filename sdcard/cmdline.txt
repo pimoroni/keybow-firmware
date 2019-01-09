@@ -1,0 +1,1 @@
+dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 elevator=deadline rootwait consoleblank=0 modules-load=g_multi g_multi.file=/dev/mmcblk0p1 g_multi.stall=0 g_multi.cdrom=0 g_multi.removable=1 g_multi.nofua=0

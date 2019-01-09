@@ -1,0 +1,14 @@
+dtparam=i2c_arm=on
+dtparam=spi=on
+dtoverlay=dwc2
+#dtoverlay=keybow
+
+# Uncomment for stable serial (GPIO UART) terminal
+#dtoverlay=pi3-disable-bt
+
+# Uncomment for pHAT BEAT, pHAT DAC or Speaker pHAT
+#dtparam=hifiberry-dac
+
+gpu_mem=16
+
+initramfs initrd

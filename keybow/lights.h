@@ -1,6 +1,7 @@
 #pragma once
 
 #include <bcm2835.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -40,3 +41,4 @@ void lights_show();
 void lights_cleanup();
 void lights_drawPngFrame(int frame);
 int read_png_file(char* file_name);
+int initLights();

@@ -1,7 +1,5 @@
 keybow = {}
 
---local SHIFTED_KEYS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!\"£$%^&*()_+{}:@~<>?|"
-
 local KEYCODES         = "abcdefghijklmnopqrstuvwxyz1234567890\n\a\b\t -=[]\\#;'`,./"
 local SHIFTED_KEYCODES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()\a\a\a\a\a_+{}|~:\"~<>?"
 
@@ -21,6 +19,11 @@ keybow.BACKSPACE = 0x2a
 keybow.TAB = 0x2b
 keybow.SPACE = 0x2c
 keybow.CAPSLOCK = 0x39
+
+keybow.LEFT_ARROW = 0x50
+keybow.RIGHT_ARROW = 0x4f
+keybow.UP_ARROW = 0x52
+keybow.DOWN_ARROW = 0x51
 
 keybow.F1 = 0x3a
 keybow.F2 = 0x3b
@@ -53,8 +56,6 @@ function keybow.usleep(time)
 end
 
 function keybow.text(text)
-    --print("Text: " .. text)
-
     for i = 1, #text do        
         local c = text:sub(i, i)
         keybow.tap_key(c)
@@ -166,7 +167,6 @@ function keybow.set_key(key, pressed)
 
         if not (hid_code == nil) then
             hid_code = hid_code + 3
-            --print(key, shifted, hid_code)
             if shifted then keybow.set_modifier(keybow.LEFT_SHIFT, pressed) end
             keybow_set_key(hid_code, pressed)
         end
@@ -184,6 +184,16 @@ end
 function keybow.tap_space()
     keybow.set_key(keybow.SPACE, true)
     keybow.set_key(keybow.SPACE, false)
+end
+
+function keybow.tap_shift()
+    keybow.set_key(keybow.LEFT_SHIFT, true)
+    keybow.set_key(keybow.LEFT_SHIFT, false)
+end
+
+function keybow.tap_tab()
+    keybow.set_key(keybow.TAB, true)
+    keybow.set_key(keybow.TAB, false)
 end
 
 function keybow.tap_key(key)
