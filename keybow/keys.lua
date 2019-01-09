@@ -1,5 +1,9 @@
 require "keybow"
 
+function tick()
+
+end
+
 -- Standard number pad mapping --
 
 -- Key mappings --

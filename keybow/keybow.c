@@ -180,6 +180,7 @@ int main() {
             lights_drawPngFrame(delta);
         }
         lights_show();*/
+        luaTick();
         updateKeys();
         usleep(1000);
         //usleep(250000);

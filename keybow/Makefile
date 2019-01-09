@@ -18,3 +18,9 @@ lightstest: lightstest.c lights.c
 keybow-test: CFLAGS+=-Wall -DKEYBOW_DEBUG -DKEYBOW_NO_USB_HID -DKEYBOW_HOME='"."' $(CFLAGS_ALL)
 keybow-test: keybow.c lights.c lua-config.c
 	$(CC) $^ $(CFLAGS) -o $@
+
+clean:
+	-rm keybow-test
+	-rm keybow
+	-rm luatest
+	-rm lightstest

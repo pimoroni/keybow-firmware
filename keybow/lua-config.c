@@ -221,6 +221,7 @@ static int l_load_pattern(lua_State *L) {
 }
 
 int initLUA() {
+    has_tick = 1;
     modifiers = 0;
 
     L = luaL_newstate();
@@ -291,6 +292,18 @@ int luaHandleKey(unsigned short key_index, unsigned short key_state) {
         return 1;
     }
     return 0;
+}
+
+void luaTick(void){
+    if (has_tick == 0){return;}
+    lua_getglobal(L, "tick");
+    if(lua_isfunction(L, lua_gettop(L))){
+        lua_pushnumber(L, millis());
+        lua_pcall(L, 1, 0, 0);
+    } else {
+        printf("tick is not defined!\n");
+        has_tick = 0;
+    }
 }
 
 void luaClose(void){

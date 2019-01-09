@@ -9,12 +9,14 @@
 #pragma once
 
 int hid_output;
+int has_tick;
 lua_State* L;
 
 unsigned short modifiers;
 unsigned short pressed_keys[14];
 
 int initLUA();
+void luaTick(void);
 int luaHandleKey(unsigned short key_index, unsigned short state);
 void luaClose(void);
 void luaCallSetup(void);
