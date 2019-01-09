@@ -25,3 +25,13 @@ mkdir build
 make
 make install
 ```
+
+### libusbgx
+
+```
+cd libusbgx
+autoreconf -i
+./configure --prefix=$(pwd)/build
+make
+make install
+```

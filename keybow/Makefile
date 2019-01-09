@@ -1,4 +1,4 @@
-CFLAGS_ALL=-I../libusbgx/include -I../bcm2835-1.58/build/include -L../bcm2835-1.58/build/lib -I../lua-5.3.5/src -L/lib -L../lua-5.3.5/src -lpng -lz -lpthread -llua -lm -lbcm2835 -ldl
+CFLAGS_ALL=-I../libusbgx/build/include -I../bcm2835-1.58/build/include -L../bcm2835-1.58/build/lib -I../lua-5.3.5/src -L../libusbgx/build/lib -L../lua-5.3.5/src -lpng -lz -lpthread -llua -lm -lbcm2835 -ldl
 
 keybow: CFLAGS+=-static $(CFLAGS_ALL) -lusbgx -lconfig
 keybow: keybow.c lights.c lua-config.c gadget-hid.c
@@ -19,8 +19,13 @@ keybow-test: CFLAGS+=-Wall -DKEYBOW_DEBUG -DKEYBOW_NO_USB_HID -DKEYBOW_HOME='"."
 keybow-test: keybow.c lights.c lua-config.c
 	$(CC) $^ $(CFLAGS) -o $@
 
+keybow-usbtest: CFLAGS+=-static -Wall -DKEYBOW_DEBUG -DKEYBOW_HOME='"."' $(CFLAGS_ALL) -lusbgx -lconfig
+keybow-usbtest: keybow.c lights.c lua-config.c gadget-hid.c
+	$(CC) $^ $(CFLAGS) -o $@
+
 clean:
 	-rm keybow-test
+	-rm keybow-usbtest
 	-rm keybow
 	-rm luatest
 	-rm lightstest
