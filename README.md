@@ -11,3 +11,17 @@ This Keybow OS is RAM-disk-based and built upon a stripped-down Raspbian, with C
 Format a micro-SD card in FAT32 format (we recommend the SD Association's [SD Card Formatter](https://www.sdcard.org/downloads/formatter_4/), and then drop the contents of the [sdcard](sdcard) folder (only the files inside the folder) onto the freshly-formatted micro-SD card.
 
 [Learn more about how to use Keybow on our learning portal](https://learn.pimoroni.com/keybow).
+
+## Building
+
+### bcm2835
+
+Build the bcm2835 library and install into a local build directory for static linking.
+
+```
+cd bcm2835-x.xx
+mkdir build
+./configure --prefix=$(pwd)/build
+make
+make install
+```
