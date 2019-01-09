@@ -10,6 +10,7 @@
 
 int hid_output;
 int has_tick;
+unsigned long long tick_start;
 lua_State* L;
 
 unsigned short modifiers;

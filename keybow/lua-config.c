@@ -221,7 +221,6 @@ static int l_load_pattern(lua_State *L) {
 }
 
 int initLUA() {
-    has_tick = 1;
     modifiers = 0;
 
     L = luaL_newstate();
@@ -265,6 +264,13 @@ int initLUA() {
         printf("Runtime Error: %s\n", lua_tostring(L, -1));
     }
 
+    lua_getglobal(L, "tick");
+    has_tick = lua_isfunction(L, lua_gettop(L));
+    if(!has_tick){
+        printf("No tick() function found in keys.lua\n");
+    }
+    tick_start = millis();
+
     return 0;
 }
 
@@ -297,13 +303,8 @@ int luaHandleKey(unsigned short key_index, unsigned short key_state) {
 void luaTick(void){
     if (has_tick == 0){return;}
     lua_getglobal(L, "tick");
-    if(lua_isfunction(L, lua_gettop(L))){
-        lua_pushnumber(L, millis());
-        lua_pcall(L, 1, 0, 0);
-    } else {
-        printf("tick is not defined!\n");
-        has_tick = 0;
-    }
+    lua_pushnumber(L, millis()-tick_start);
+    lua_pcall(L, 1, 0, 0);
 }
 
 void luaClose(void){
