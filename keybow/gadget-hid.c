@@ -4,6 +4,7 @@
 #include <linux/usb/ch9.h>
 #include <usbg/usbg.h>
 #include <usbg/function/hid.h>
+#include <usbg/function/midi.h>
 
 static char report_desc[] = {
     0x05, 0x01, // USAGE_PAGE (Generic Desktop)
@@ -114,6 +115,15 @@ int initUSB() {
 		.configuration = "1xHID"
 	};
 
+    struct usbg_f_midi_attrs midi_attrs = {
+        .index = 1,
+        .id = "usb1",
+        .buflen = 128,
+        .qlen = 16,
+        .in_ports = 1,
+        .out_ports = 1
+    };
+
 	struct usbg_f_hid_attrs f_attrs = {
 		.protocol = 1,
 		.report_desc = {
@@ -148,6 +158,15 @@ int initUSB() {
 		goto out2;
 	}
 
+
+    usbg_ret = usbg_create_function(g, USBG_F_MIDI, "usb0", &midi_attrs, &f_midi);
+    if (usbg_ret != USBG_SUCCESS) {
+        fprintf(stderr, "Error creating function\n");
+        fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
+                usbg_strerror(usbg_ret));
+        goto out2;
+    }
+
 	usbg_ret = usbg_create_config(g, 1, "config", NULL, &c_strs, &c);
 	if (usbg_ret != USBG_SUCCESS) {
 		fprintf(stderr, "Error creating config\n");
@@ -163,6 +182,14 @@ int initUSB() {
 				usbg_strerror(usbg_ret));
 		goto out2;
 	}
+
+    usbg_ret = usbg_add_config_function(c, "midi", f_midi);
+    if (usbg_ret != USBG_SUCCESS) {
+        fprintf(stderr, "Error adding function\n");
+        fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
+                usbg_strerror(usbg_ret));
+        goto out2;
+    }
 
 	usbg_ret = usbg_enable_gadget(g, DEFAULT_UDC);
 	if (usbg_ret != USBG_SUCCESS) {

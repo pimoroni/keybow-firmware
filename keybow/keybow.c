@@ -21,6 +21,7 @@
 #include <unistd.h>
 
 int hid_output;
+int midi_output;
 int running = 0;
 int key_index = 0;
 
@@ -137,9 +138,18 @@ int main() {
         printf("Error opening /dev/hidg0 for writing.\n");
         return 1;
     }
+
+    do {
+        midi_output = open("/dev/snd/midiC1D0", O_WRONLY | O_NDELAY);
+    } while (midi_output == -1 && errno == EINTR);
+    if (midi_output == -1){
+        printf("Error opening /dev/snd/midiC1D0 for writing.\n");
+        return 1;
+    }
 #else
     printf("Opening /dev/null for output.\n");
     hid_output = open("/dev/null", O_WRONLY);
+    midi_output = open("/dev/null", O_WRONLY);
 #endif
 
 #ifdef KEYBOW_DEBUG
