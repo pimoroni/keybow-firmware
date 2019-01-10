@@ -39,14 +39,37 @@ void pressKey(unsigned short hid_code){
 void sendHIDReport(){
     int x;
     unsigned char buf[16];
-    buf[0] = modifiers;
-    buf[1] = 0;
-    for(x = 2; x < 16; x++){
-        buf[x] = pressed_keys[x-2];
+    buf[0] = 1; // report id
+    buf[1] = modifiers;
+    buf[2] = 0; // padding
+    for(x = 3; x < 16; x++){
+        buf[x] = pressed_keys[x-3];
     }
     write(hid_output, buf, HID_REPORT_SIZE);
     usleep(1000);
+
+    if(media_keys != last_media_keys){
+        buf[0] = 2; // report id
+        buf[1] = media_keys; // media keys
+        write(hid_output, buf, 2);
+        usleep(1000);
+        last_media_keys = media_keys;
+    }
 }
+
+int toggleMediaKey(unsigned short modifier) {
+    if(media_keys & (1 << modifier)){
+        media_keys &= ~(1 << modifier);
+    }
+    else
+    {
+        media_keys |= (1 << modifier);
+    }
+    sendHIDReport();
+
+    return (media_keys & (1 << modifier)) > 0;
+}
+
 
 int toggleModifier(unsigned short modifier) {
     if(modifiers & (1 << modifier)){
@@ -103,6 +126,31 @@ static int l_set_modifier(lua_State *L) {
         modifiers |= (state << index);
 #ifdef KEYBOW_DEBUG
         printf("Modifier %d set to %d\n", index, state);
+#endif
+        sendHIDReport();
+    }
+
+    lua_pushboolean(L, current != state);
+    return 1;
+}
+
+static int l_set_media_key(lua_State *L) {
+    int nargs = lua_gettop(L);
+    unsigned short index = luaL_checknumber(L, 1);
+    unsigned short state = lua_toboolean(L, 2);
+    lua_pop(L, nargs);
+
+    unsigned short current = (media_keys & (1 << index)) > 0;
+
+#ifdef KEYBOW_DEBUG
+    printf("Media Key %d requested to %d, current: %d\n", index, state, current);
+#endif
+
+    if(current != state){
+        media_keys &= ~(1 << index);
+        media_keys |= (state << index);
+#ifdef KEYBOW_DEBUG
+        printf("Media Key %d set to %d\n", index, state);
 #endif
         sendHIDReport();
     }
@@ -252,6 +300,9 @@ int initLUA() {
 
     lua_pushcfunction(L, l_set_modifier);
     lua_setglobal(L, "keybow_set_modifier");
+
+    lua_pushcfunction(L, l_set_media_key);
+    lua_setglobal(L, "keybow_set_media_key");
   
     int status;
     status = luaL_loadfile(L, "keys.lua");
@@ -315,4 +366,5 @@ void luaClose(void){
     }
     lua_close(L);
     sendHIDReport();
+    close(hid_output);
 }

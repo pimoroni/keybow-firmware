@@ -4,7 +4,7 @@
 
 #define VENDOR          0x1d6b
 #define PRODUCT         0x0104
-#define HID_REPORT_SIZE 15
+#define HID_REPORT_SIZE 16
 
 usbg_state *s;
 usbg_gadget *g;

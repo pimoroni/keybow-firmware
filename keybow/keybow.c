@@ -97,6 +97,7 @@ void *run_lights(void *void_ptr){
         lights_show();
         usleep(16666); // About 60fps
     }
+    return NULL;
 }
 
 int main() {
@@ -188,8 +189,12 @@ int main() {
 
     pthread_join(t_run_lights, NULL);
 
-    //cleanupUSB();
-    bcm2835_close();
+    printf("Closing LUA\n");
     luaClose();
+    printf("Cleanup USB\n");
+    cleanupUSB();
+    printf("Cleanup BCM2835\n");
+    bcm2835_close();
+
     return 0;
 }
