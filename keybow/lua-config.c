@@ -99,6 +99,63 @@ int toggleModifier(unsigned short modifier) {
     return (modifiers & (1 << modifier)) > 0;
 }
 
+static int l_load(lua_State *L) {
+    int nargs = lua_gettop(L);
+
+    size_t name_length;
+    const char *name = luaL_checklstring(L, 1, &name_length);
+
+    char *filepath = malloc(sizeof(char) * (name_length + sizeof(KEYBOW_HOME) + 7));
+    sprintf(filepath, "%s/user/%s", KEYBOW_HOME, name);
+
+    FILE *fd = fopen((const char*)filepath, "r");
+
+    lua_pop(L, nargs);
+
+    if (fd != NULL){
+        fseek(fd, 0, SEEK_END);
+        long filesize = ftell(fd);
+        fseek(fd, 0, SEEK_SET);
+
+        char *contents = malloc(filesize + 1);
+        fread(contents, filesize, 1, fd);
+        fclose(fd);
+
+        lua_pushstring(L, contents);
+
+        free(filepath);
+        return 1;
+    }
+
+    free(filepath);
+    return 0;
+}
+
+static int l_save(lua_State *L) {
+    int nargs = lua_gettop(L);
+
+    size_t name_length;
+    const char *name = luaL_checklstring(L, 1, &name_length);
+
+    size_t output_length;
+    const char *output = luaL_checklstring(L, 2, &output_length);
+
+    char *filepath = malloc(sizeof(char) * (name_length + sizeof(KEYBOW_HOME) + 7));
+    sprintf(filepath, "%s/user/%s", KEYBOW_HOME, name);
+
+    lua_pop(L, nargs);
+
+    FILE *fd = fopen((const char *)filepath, "w");
+    if (fd != NULL){
+        fwrite(output, 1, output_length, fd);
+        fclose(fd);
+    }
+
+    //lua_pushboolean(L, 1);
+    free(filepath);
+    return 0;
+}
+
 static int l_usleep(lua_State *L) {
     int nargs = lua_gettop(L);
     int t = luaL_checknumber(L, 1);
@@ -294,6 +351,13 @@ static int l_load_pattern(lua_State *L) {
     return 1;
 }
 
+static int l_get_millis(lua_State *L) {
+    int nargs = lua_gettop(L);
+    lua_pop(L, nargs);
+    lua_pushnumber(L, millis() - tick_start);
+    return 1;
+}
+
 int initLUA() {
     modifiers = 0;
 
@@ -332,6 +396,15 @@ int initLUA() {
 
     lua_pushcfunction(L, l_send_midi_note);
     lua_setglobal(L, "keybow_send_midi_note");
+
+    lua_pushcfunction(L, l_get_millis);
+    lua_setglobal(L, "keybow_get_millis");
+
+    lua_pushcfunction(L, l_save);
+    lua_setglobal(L, "keybow_file_save");
+
+    lua_pushcfunction(L, l_load);
+    lua_setglobal(L, "keybow_file_load");
   
     int status;
     status = luaL_loadfile(L, "keys.lua");

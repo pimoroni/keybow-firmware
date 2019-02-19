@@ -86,34 +86,32 @@ static char report_desc[] = {
     0x81, 0x02, //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
 
     0xC0        // END_COLLECTION
-
-
 };
 
 int initUSB() {
-	int ret = -EINVAL;
-	int usbg_ret;
+    int ret = -EINVAL;
+    int usbg_ret;
 
-	struct usbg_gadget_attrs g_attrs = {
-		.bcdUSB = 0x0200,
-		.bDeviceClass =	USB_CLASS_PER_INTERFACE,
-		.bDeviceSubClass = 0x00,
-		.bDeviceProtocol = 0x00,
-		.bMaxPacketSize0 = 64, /* Max allowed ep0 packet size */
-		.idVendor = VENDOR,
-		.idProduct = PRODUCT,
-		.bcdDevice = 0x0001, /* Verson of device */
-	};
+    struct usbg_gadget_attrs g_attrs = {
+        .bcdUSB = 0x0200,
+        .bDeviceClass = USB_CLASS_PER_INTERFACE,
+        .bDeviceSubClass = 0x00,
+        .bDeviceProtocol = 0x00,
+        .bMaxPacketSize0 = 64, /* Max allowed ep0 packet size */
+        .idVendor = VENDOR,
+        .idProduct = PRODUCT,
+        .bcdDevice = 0x0001, /* Verson of device */
+    };
 
-	struct usbg_gadget_strs g_strs = {
-		.serial = "0123456789", /* Serial number */
-		.manufacturer = "Pimoroni", /* Manufacturer */
-		.product = "Keybow" /* Product string */
-	};
+    struct usbg_gadget_strs g_strs = {
+        .serial = "0123456789", /* Serial number */
+        .manufacturer = "Pimoroni", /* Manufacturer */
+        .product = "Keybow" /* Product string */
+    };
 
-	struct usbg_config_strs c_strs = {
-		.configuration = "1xHID"
-	};
+    struct usbg_config_strs c_strs = {
+        .configuration = "1xHID"
+    };
 
     struct usbg_f_midi_attrs midi_attrs = {
         .index = 1,
@@ -124,42 +122,33 @@ int initUSB() {
         .out_ports = 1
     };
 
-	struct usbg_f_hid_attrs f_attrs = {
-		.protocol = 1,
-		.report_desc = {
-			.desc = report_desc,
-			.len = sizeof(report_desc),
-		},
-		.report_length = 16,
-		.subclass = 0,
-	};
+    struct usbg_f_hid_attrs f_attrs = {
+        .protocol = 1,
+        .report_desc = {
+            .desc = report_desc,
+            .len = sizeof(report_desc),
+        },
+        .report_length = 16,
+        .subclass = 0,
+    };
 
-	usbg_ret = usbg_init("/sys/kernel/config", &s);
-	if (usbg_ret != USBG_SUCCESS) {
-		fprintf(stderr, "Error on usbg init\n");
-		fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
-				usbg_strerror(usbg_ret));
-		goto out1;
-	}
+    usbg_ret = usbg_init("/sys/kernel/config", &s);
+    if (usbg_ret != USBG_SUCCESS) {
+        fprintf(stderr, "Error on usbg init\n");
+        fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
+                usbg_strerror(usbg_ret));
+        goto out1;
+    }
 
-	usbg_ret = usbg_create_gadget(s, "g1", &g_attrs, &g_strs, &g);
-	if (usbg_ret != USBG_SUCCESS) {
-		fprintf(stderr, "Error creating gadget\n");
-		fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
-				usbg_strerror(usbg_ret));
-		goto out2;
-	}
+    usbg_ret = usbg_create_gadget(s, "g1", &g_attrs, &g_strs, &g);
+    if (usbg_ret != USBG_SUCCESS) {
+        fprintf(stderr, "Error creating gadget\n");
+        fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
+                usbg_strerror(usbg_ret));
+        goto out2;
+    }
 
-	usbg_ret = usbg_create_function(g, USBG_F_HID, "usb0", &f_attrs, &f_hid);
-	if (usbg_ret != USBG_SUCCESS) {
-		fprintf(stderr, "Error creating function\n");
-		fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
-				usbg_strerror(usbg_ret));
-		goto out2;
-	}
-
-
-    usbg_ret = usbg_create_function(g, USBG_F_MIDI, "usb0", &midi_attrs, &f_midi);
+    usbg_ret = usbg_create_function(g, USBG_F_ACM, "usb0", NULL, &f_acm0);
     if (usbg_ret != USBG_SUCCESS) {
         fprintf(stderr, "Error creating function\n");
         fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
@@ -167,45 +156,69 @@ int initUSB() {
         goto out2;
     }
 
-	usbg_ret = usbg_create_config(g, 1, "config", NULL, &c_strs, &c);
-	if (usbg_ret != USBG_SUCCESS) {
-		fprintf(stderr, "Error creating config\n");
-		fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
-				usbg_strerror(usbg_ret));
-		goto out2;
-	}
-
-	usbg_ret = usbg_add_config_function(c, "keyboard", f_hid);
-	if (usbg_ret != USBG_SUCCESS) {
-		fprintf(stderr, "Error adding function\n");
-		fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
-				usbg_strerror(usbg_ret));
-		goto out2;
-	}
-
-    usbg_ret = usbg_add_config_function(c, "midi", f_midi);
+    usbg_ret = usbg_create_function(g, USBG_F_HID, "usb0", &f_attrs, &f_hid);
     if (usbg_ret != USBG_SUCCESS) {
-        fprintf(stderr, "Error adding function\n");
+        fprintf(stderr, "Error creating function: USBG_F_HID\n");
         fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
                 usbg_strerror(usbg_ret));
         goto out2;
     }
 
-	usbg_ret = usbg_enable_gadget(g, DEFAULT_UDC);
-	if (usbg_ret != USBG_SUCCESS) {
-		fprintf(stderr, "Error enabling gadget\n");
-		fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
-				usbg_strerror(usbg_ret));
-		goto out2;
-	}
+    usbg_ret = usbg_create_function(g, USBG_F_MIDI, "usb0", &midi_attrs, &f_midi);
+    if (usbg_ret != USBG_SUCCESS) {
+        fprintf(stderr, "Error creating function: USBG_F_MIDI\n");
+        fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
+                usbg_strerror(usbg_ret));
+        goto out2;
+    }
 
-	ret = 0;
+    usbg_ret = usbg_create_config(g, 1, "config", NULL, &c_strs, &c);
+    if (usbg_ret != USBG_SUCCESS) {
+        fprintf(stderr, "Error creating config\n");
+        fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
+                usbg_strerror(usbg_ret));
+        goto out2;
+    }
+
+    usbg_ret = usbg_add_config_function(c, "acm.GS0", f_acm0);
+    if (usbg_ret != USBG_SUCCESS) {
+        fprintf(stderr, "Error adding function ecm.GS0\n");
+        fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
+                usbg_strerror(usbg_ret));
+        goto out2;
+    }
+
+    usbg_ret = usbg_add_config_function(c, "keyboard", f_hid);
+    if (usbg_ret != USBG_SUCCESS) {
+        fprintf(stderr, "Error adding function: keyboard\n");
+        fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
+                usbg_strerror(usbg_ret));
+        goto out2;
+    }
+
+    usbg_ret = usbg_add_config_function(c, "midi", f_midi);
+    if (usbg_ret != USBG_SUCCESS) {
+        fprintf(stderr, "Error adding function: midi\n");
+        fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
+                usbg_strerror(usbg_ret));
+        goto out2;
+    }
+
+    usbg_ret = usbg_enable_gadget(g, DEFAULT_UDC);
+    if (usbg_ret != USBG_SUCCESS) {
+        fprintf(stderr, "Error enabling gadget\n");
+        fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
+                usbg_strerror(usbg_ret));
+        goto out2;
+    }
+
+    ret = 0;
 
 out2:
-	usbg_cleanup(s);
+    usbg_cleanup(s);
 
 out1:
-	return ret;
+    return ret;
 }
 
 int cleanupUSB(){

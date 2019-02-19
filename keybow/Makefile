@@ -5,7 +5,7 @@ keybow: keybow.c lights.c lua-config.c gadget-hid.c
 	$(CC)  $^ $(CFLAGS) -o $@
 
 
-luatest: CFLAGS+=-static -I../lua-5.3.5/src -L../lua-5.3.5/src -llua -lm
+luatest: CFLAGS+=-static -I../lua-5.3.5/src -L../lua-5.3.5/src -llua -lm -ldl
 luatest: luatest.c
 	$(CC) $^ $(CFLAGS) -o $@
 

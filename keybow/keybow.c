@@ -201,8 +201,10 @@ int main() {
 
     printf("Closing LUA\n");
     luaClose();
+#ifndef KEYBOW_NO_USB_HID
     printf("Cleanup USB\n");
     cleanupUSB();
+#endif
     printf("Cleanup BCM2835\n");
     bcm2835_close();
 
