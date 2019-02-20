@@ -1,11 +1,9 @@
 #include "keybow.h"
 
+#include "serial.h"
+
 #ifndef KEYBOW_NO_USB_HID
 #include "gadget-hid.h"
-#endif
-
-#ifndef KEYBOW_HOME
-#define KEYBOW_HOME "/boot/"
 #endif
 
 #include "lights.h"
@@ -173,6 +171,8 @@ int main() {
 #endif
     initLights();
     read_png_file("default.png");
+
+    serial_open();
 
     printf("Running...\n");
     running = 1;

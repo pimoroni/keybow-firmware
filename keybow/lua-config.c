@@ -2,6 +2,7 @@
 #include "lights.h"
 #include "keybow.h"
 #include "gadget-hid.h"
+#include "serial.h"
 
 int isPressed(unsigned short hid_code){
     int x;
@@ -154,6 +155,26 @@ static int l_save(lua_State *L) {
     //lua_pushboolean(L, 1);
     free(filepath);
     return 0;
+}
+
+static int l_serial_read(lua_State *L) {
+    int nargs = lua_gettop(L);
+    lua_pop(L, nargs);
+    const char *data = serial_read();
+    lua_pushstring(L, data);
+    return 1;
+}
+
+static int l_serial_write(lua_State *L) {
+    int nargs = lua_gettop(L);
+
+    size_t length;
+    const char *data = luaL_checklstring(L, 1, &length);
+
+    lua_pop(L, nargs);
+
+    lua_pushnumber(L, serial_write(data, length));
+    return 1;
 }
 
 static int l_usleep(lua_State *L) {
@@ -405,6 +426,12 @@ int initLUA() {
 
     lua_pushcfunction(L, l_load);
     lua_setglobal(L, "keybow_file_load");
+
+    lua_pushcfunction(L, l_serial_write);
+    lua_setglobal(L, "keybow_serial_write");
+
+    lua_pushcfunction(L, l_serial_read);
+    lua_setglobal(L, "keybow_serial_read");
   
     int status;
     status = luaL_loadfile(L, "keys.lua");
