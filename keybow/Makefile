@@ -15,7 +15,7 @@ lightstest: lightstest.c lights.c
 	$(CC) $^ $(CFLAGS) -o $@
 
 
-keybow-test: CFLAGS+=-Wall -DKEYBOW_DEBUG -DKEYBOW_NO_USB_HID -DKEYBOW_HOME='"."' $(CFLAGS_ALL)
+keybow-test: CFLAGS+=-Wall -DKEYBOW_DEBUG -DKEYBOW_NO_USB_HID -DKEYBOW_HOME='"."' -DKEYBOW_SERIAL='"/dev/tnt0"' $(CFLAGS_ALL)
 keybow-test: keybow.c lights.c lua-config.c serial.c
 	$(CC) $^ $(CFLAGS) -o $@
 

@@ -162,6 +162,7 @@ static int l_serial_read(lua_State *L) {
     lua_pop(L, nargs);
     const char *data = serial_read();
     lua_pushstring(L, data);
+    //free(data);
     return 1;
 }
 
