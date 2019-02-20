@@ -1,4 +1,7 @@
-int sp_readline(char (*buffer)[], int length);
+#ifndef KEYBOW_SERIAL
+#define KEYBOW_SERIAL "/dev/ttyGS0"
+#endif
+int sp_readline();
 int serial_open();
-const char* serial_read();
+char* serial_read();
 int serial_write(const char* data, int length);
