@@ -16,7 +16,7 @@ make install
 cd $WORKING_DIR
 
 cd lua-5.3.5
-make
+make linux
 cd $WORKING_DIR
 
 cd libusbgx
