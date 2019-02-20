@@ -2,13 +2,6 @@ set -e
 
 WORKING_DIR=$(pwd)
 
-cd libserialport
-./autogen.sh
-./configure --prefix=$(pwd)/build
-make
-make install
-cd $WORKING_DIR
-
 cd bcm2835-1.58
 autoreconf -i
 ./configure --prefix=$(pwd)/build
