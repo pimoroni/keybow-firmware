@@ -83,3 +83,13 @@ end
 function linux_snippets.u_switch_app_directly()
     modifier(keybow.ESC, keybow.LEFT_ALT)
 end
+
+function linux_snippets.u_open_app(place)
+    -- opens app in Ubuntu Gnome's sidebar at the place number specified in 'place', 'place' must be a string!
+    modifier(place, keybow.LEFT_META)
+end
+
+function linux_snippets.u_open_new_instance(place)
+    -- opens new instance of app in Ubuntu Gnome's sidebar at the place number specified in 'place', 'place' must be a string!
+    modifier(place, keybow.LEFT_META, keybow.LEFT_SHIFT)
+end
