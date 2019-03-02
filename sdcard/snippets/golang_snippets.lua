@@ -1,5 +1,7 @@
 require "keybow"
 
+golang_snippets = {}
+
 function golang_snippets.append()
     keybow.text("append(slice, value)")
 end
