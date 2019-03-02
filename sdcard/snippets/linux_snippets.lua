@@ -1,5 +1,7 @@
 require "keybow"
 
+linux_snippets = {}
+
 function modifier(key, ...)
     for i = 1, select('#', ...) do
         local j = select(i, ...)
