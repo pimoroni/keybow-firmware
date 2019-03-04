@@ -14,3 +14,4 @@ include_files = {
 
 files["sdcard/snippets/*.lua"] = {ignore = {"131"}}
 files["sdcard/layouts/*.lua"] = {ignore = {"131"}}
+files["sdcard/layouts/boilerplate.lua"] = {ignore = {"612"}} -- ignore whitespace at end of lipsum
