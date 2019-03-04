@@ -5,7 +5,6 @@ globals = {
 }
 
 allow_defined = true
-unused = false
 codes = true
 
 include_files = {
