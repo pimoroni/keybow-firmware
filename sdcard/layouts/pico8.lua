@@ -70,7 +70,7 @@ function handle_key_06(pressed) -- Down
     keybow.set_key(keybow.DOWN_ARROW, pressed)
 end
 
-function handle_key_07(pressed) -- Up  
+function handle_key_07(pressed) -- Up
     keybow.set_key(keybow.UP_ARROW, pressed)
 end
 
