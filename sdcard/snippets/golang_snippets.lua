@@ -6,15 +6,15 @@ function golang_snippets.append()
     keybow.text("append(slice, value)")
 end
 
-function golang_snippets.break()
+function golang_snippets.break_keyword()
     keybow.text("break")
 end
 
-function golang_snippets.continue()
+function golang_snippets.continue_keyword()
     keybow.text("continue")
 end
 
-function golang_snippets.defer()
+function golang_snippets.defer_keyword()
     keybow.text("defer")
 end
 
