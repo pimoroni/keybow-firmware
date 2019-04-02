@@ -25,6 +25,13 @@ keybow.RIGHT_ARROW = 0x4f
 keybow.UP_ARROW = 0x52
 keybow.DOWN_ARROW = 0x51
 
+keybow.INSERT = 0x49
+keybow.HOME = 0x4a
+keybow.DELETE = 0x4c
+keybow.END = 0x4d
+keybow.PAGEUP = 0x4b
+keybow.PAGEDOWN = 0x4e
+
 keybow.F1 = 0x3a
 keybow.F2 = 0x3b
 keybow.F3 = 0x3c
