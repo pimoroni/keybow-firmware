@@ -20,6 +20,7 @@ Build the bcm2835 library and install into a local build directory for static li
 
 ```
 cd bcm2835-x.xx
+autoreconf -f -i
 mkdir build
 ./configure --prefix=$(pwd)/build
 make
@@ -29,9 +30,19 @@ make install
 ### libusbgx
 
 ```
+sudo apt install libconfig-dev
 cd libusbgx
 autoreconf -i
+mkdir build
 ./configure --prefix=$(pwd)/build
 make
 make install
+```
+
+### lua
+
+```
+sudo apt install libreadline-dev
+cd lua-5.3.5
+make linux
 ```
