@@ -10,6 +10,7 @@ usbg_state *s;
 usbg_gadget *g;
 usbg_config *c;
 usbg_function *f_hid;
+usbg_function *f_midi;
 
 int initUSB();
 int cleanupUSB();

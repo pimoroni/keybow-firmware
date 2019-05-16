@@ -36,6 +36,21 @@ void pressKey(unsigned short hid_code){
     // No empty slot found
 }
 
+void sendMIDINote(int channel, int note, int velocity, int state) {
+    unsigned char buf[3];
+    if(state == 1){
+        buf[0] = 0x90;
+    }
+    else
+    {
+        buf[0] = 0x80;
+    }
+    buf[0] |= channel & 0xf;
+    buf[1] = note & 0x7f;
+    buf[2] = velocity & 0x7f;
+    write(midi_output, buf, 3);
+}
+
 void sendHIDReport(){
     int x;
     unsigned char buf[16];
@@ -97,6 +112,17 @@ static int l_sleep(lua_State *L) {
     int t = luaL_checknumber(L, 1);
     lua_pop(L, nargs);
     usleep(t * 1000);
+    return 0;
+}
+
+static int l_send_midi_note(lua_State *L) {
+    int nargs = lua_gettop(L);
+    unsigned short channel = luaL_checknumber(L, 1);
+    unsigned short note = luaL_checknumber(L, 2);
+    unsigned short velocity = luaL_checknumber(L, 3);
+    unsigned short state = lua_toboolean(L, 4);
+    lua_pop(L, nargs);
+    sendMIDINote(channel, note, velocity, state);
     return 0;
 }
 
@@ -303,6 +329,9 @@ int initLUA() {
 
     lua_pushcfunction(L, l_set_media_key);
     lua_setglobal(L, "keybow_set_media_key");
+
+    lua_pushcfunction(L, l_send_midi_note);
+    lua_setglobal(L, "keybow_send_midi_note");
   
     int status;
     status = luaL_loadfile(L, "keys.lua");
