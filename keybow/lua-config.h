@@ -9,10 +9,13 @@
 #pragma once
 
 int hid_output;
+int midi_output;
 int has_tick;
 unsigned long long tick_start;
 lua_State* L;
 
+unsigned short last_media_keys;
+unsigned short media_keys;
 unsigned short modifiers;
 unsigned short pressed_keys[14];
 

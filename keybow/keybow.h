@@ -5,6 +5,10 @@
 
 #define NUM_KEYS 12
 
+#ifndef KEYBOW_HOME
+#define KEYBOW_HOME "/boot/"
+#endif
+
 pthread_mutex_t lights_mutex;
 
 unsigned short last_state[NUM_KEYS];

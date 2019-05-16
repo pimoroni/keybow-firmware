@@ -1,11 +1,9 @@
 #include "keybow.h"
 
+#include "serial.h"
+
 #ifndef KEYBOW_NO_USB_HID
 #include "gadget-hid.h"
-#endif
-
-#ifndef KEYBOW_HOME
-#define KEYBOW_HOME "/boot/"
 #endif
 
 #include "lights.h"
@@ -21,6 +19,7 @@
 #include <unistd.h>
 
 int hid_output;
+int midi_output;
 int running = 0;
 int key_index = 0;
 
@@ -97,6 +96,7 @@ void *run_lights(void *void_ptr){
         lights_show();
         usleep(16666); // About 60fps
     }
+    return NULL;
 }
 
 int main() {
@@ -136,9 +136,18 @@ int main() {
         printf("Error opening /dev/hidg0 for writing.\n");
         return 1;
     }
+
+    do {
+        midi_output = open("/dev/snd/midiC1D0", O_WRONLY | O_NDELAY);
+    } while (midi_output == -1 && errno == EINTR);
+    if (midi_output == -1){
+        printf("Error opening /dev/snd/midiC1D0 for writing.\n");
+        return 1;
+    }
 #else
     printf("Opening /dev/null for output.\n");
     hid_output = open("/dev/null", O_WRONLY);
+    midi_output = open("/dev/null", O_WRONLY);
 #endif
 
 #ifdef KEYBOW_DEBUG
@@ -162,6 +171,8 @@ int main() {
 #endif
     initLights();
     read_png_file("default.png");
+
+    serial_open();
 
     printf("Running...\n");
     running = 1;
@@ -188,8 +199,14 @@ int main() {
 
     pthread_join(t_run_lights, NULL);
 
-    //cleanupUSB();
-    bcm2835_close();
+    printf("Closing LUA\n");
     luaClose();
+#ifndef KEYBOW_NO_USB_HID
+    printf("Cleanup USB\n");
+    cleanupUSB();
+#endif
+    printf("Cleanup BCM2835\n");
+    bcm2835_close();
+
     return 0;
 }
