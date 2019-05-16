@@ -10,6 +10,8 @@ static char report_desc[] = {
     0x09, 0x06, // USAGE (Keyboard)
     0xA1, 0x01, // COLLECTION (Application)
 
+    0x85, 0x01, // REPORT_ID (1)
+
     //             Bitmapped Modifiers
 
     0x05, 0x07, // USAGE_PAGE (Key Codes)
@@ -49,11 +51,42 @@ static char report_desc[] = {
     0x05, 0x07, // USAGE_PAGE (Key Codes)
     0x19, 0x00, // USAGE_MINIMUM (0)
     0x29, 0xFF, // USAGE_MAXIMUM (255)
-    0x95, HID_REPORT_SIZE - 2, // REPORT_COUNT (14)
+    0x95, 13,   // REPORT_COUNT (12)
     0x75, 0x08, // REPORT_SIZE (8)
-    0x81, 0x00, // OUTPUT (Data, Array, Abolute)
+    0x81, 0x00, // INPUT (Data, Array, Absolute)
+
+    0xC0,       // END_COLLECTION
+
+    //             Media Keys
+
+    0x05, 0x0C, // USAGE_PAGE (Conumer)
+    0x09, 0x01, // USAGE (Consumer Control)
+    0xA1, 0x01, // Collection (Application)
+
+    0x85, 0x02, //   Report ID (2)
+
+    0x05, 0x0C, //   Usage Page (Consumer)
+    0x15, 0x00, //   Logical Minimum (0)
+    0x25, 0x01, //   Logical Maximum (1)
+    0x75, 0x01, //   Report Size (1)
+
+    0x95, 0x06, //   Report Count (6)
+    0x09, 0xB5, //   Usage (Scan Next Track)
+    0x09, 0xB6, //   Usage (Scan Previous Track)
+    0x09, 0xB7, //   Usage (Stop)
+    0x09, 0xB8, //   Usage (Eject)
+    0x09, 0xCD, //   Usage (Play/Pause)
+    0x09, 0xE2, //   Usage (Mute)
+    0x81, 0x06, //   Input (Data,Var,Rel)
+
+    0x95, 0x02, //   Report Count (2)
+    0x09, 0xE9, //   Usage (Volume Increment)
+    0x09, 0xEA, //   Usage (Volume Decrement)
+    0x81, 0x02, //   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
 
     0xC0        // END_COLLECTION
+
+
 };
 
 int initUSB() {
@@ -73,8 +106,8 @@ int initUSB() {
 
 	struct usbg_gadget_strs g_strs = {
 		.serial = "0123456789", /* Serial number */
-		.manufacturer = "Foo Inc.", /* Manufacturer */
-		.product = "Bar Gadget" /* Product string */
+		.manufacturer = "Pimoroni", /* Manufacturer */
+		.product = "Keybow" /* Product string */
 	};
 
 	struct usbg_config_strs c_strs = {
@@ -87,7 +120,7 @@ int initUSB() {
 			.desc = report_desc,
 			.len = sizeof(report_desc),
 		},
-		.report_length = HID_REPORT_SIZE,
+		.report_length = 16,
 		.subclass = 0,
 	};
 
@@ -106,6 +139,7 @@ int initUSB() {
 				usbg_strerror(usbg_ret));
 		goto out2;
 	}
+
 	usbg_ret = usbg_create_function(g, USBG_F_HID, "usb0", &f_attrs, &f_hid);
 	if (usbg_ret != USBG_SUCCESS) {
 		fprintf(stderr, "Error creating function\n");
@@ -114,7 +148,7 @@ int initUSB() {
 		goto out2;
 	}
 
-	usbg_ret = usbg_create_config(g, 1, "The only one", NULL, &c_strs, &c);
+	usbg_ret = usbg_create_config(g, 1, "config", NULL, &c_strs, &c);
 	if (usbg_ret != USBG_SUCCESS) {
 		fprintf(stderr, "Error creating config\n");
 		fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
@@ -122,7 +156,7 @@ int initUSB() {
 		goto out2;
 	}
 
-	usbg_ret = usbg_add_config_function(c, "some_name", f_hid);
+	usbg_ret = usbg_add_config_function(c, "keyboard", f_hid);
 	if (usbg_ret != USBG_SUCCESS) {
 		fprintf(stderr, "Error adding function\n");
 		fprintf(stderr, "Error: %s : %s\n", usbg_error_name(usbg_ret),
@@ -148,6 +182,12 @@ out1:
 }
 
 int cleanupUSB(){
-    usbg_cleanup(s);
+    if(g){
+        usbg_disable_gadget(g);
+        usbg_rm_gadget(g, USBG_RM_RECURSE);
+    }
+    if(s){
+        usbg_cleanup(s);
+    }
     return 0;
 }

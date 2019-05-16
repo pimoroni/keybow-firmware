@@ -48,10 +48,23 @@ keybow.F12 = 0x45
 keybow.KEY_DOWN = true
 keybow.KEY_UP = false
 
+keybow.MEDIA_NEXT = 0
+keybow.MEDIA_PREV = 1
+keybow.MEDIA_STOP = 2
+keybow.MEDIA_EJECT = 3
+keybow.MEDIA_PLAYPAUSE=  4
+keybow.MEDIA_MUTE = 5
+keybow.MEDIA_VOL_UP = 6
+keybow.MEDIA_VOL_DOWN = 7
+
 -- Functions exposed from C
 
 function keybow.set_modifier(key, state)
     keybow_set_modifier(key, state)
+end
+
+function keybow.set_media_key(key, state)
+    keybow_set_media_key(key, state)
 end
 
 function keybow.sleep(time)
