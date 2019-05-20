@@ -228,3 +228,24 @@ end
 function keybow.release_key(key)
     keybow.set_key(key, false)
 end
+
+-- Keybow Mini
+
+function keybow.use_mini()
+    keybow.set_pixel = function(x, r, g, b)
+	leds = {[0] = 3, [1] = 6, [2] = 9}
+	x = leds[x]
+	if x ~= nil then
+            keybow_set_pixel(x, r, g, b)
+        end
+    end
+    _G.handle_key_00 = function(pressed)
+        handle_minikey_00(pressed)
+    end
+    _G.handle_key_03 = function(pressed)
+        handle_minikey_01(pressed)
+    end
+    _G.handle_key_06 = function(pressed)
+        handle_minikey_02(pressed)
+    end
+end

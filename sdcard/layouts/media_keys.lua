@@ -1,7 +1,8 @@
 require "keybow"
 
-function tick(t)
-end
+-- Media controls --
+
+-- Key mappings --
 
 function handle_key_00(pressed)
     keybow.set_media_key(keybow.MEDIA_VOL_UP, pressed)
