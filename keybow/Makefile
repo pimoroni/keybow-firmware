@@ -15,11 +15,11 @@ lightstest: lightstest.c lights.c
 	$(CC) $^ $(CFLAGS) -o $@
 
 
-keybow-test: CFLAGS+=-static -Wall -DKEYBOW_DEBUG -DKEYBOW_NO_USB_HID -DKEYBOW_HOME='"."' -DKEYBOW_SERIAL='"/dev/tnt0"' $(CFLAGS_ALL)
+keybow-test: CFLAGS+=-static -Wall -DKEYBOW_DEBUG -DKEYBOW_NO_USB_HID -DKEYBOW_HOME='"../sdcard"' -DKEYBOW_SERIAL='"/dev/tnt0"' $(CFLAGS_ALL)
 keybow-test: keybow.c lights.c lua-config.c serial.c
 	$(CC) $^ $(CFLAGS) -o $@
 
-keybow-usbtest: CFLAGS+=-static -Wall -DKEYBOW_DEBUG -DKEYBOW_HOME='"."' $(CFLAGS_ALL) -lusbgx -lconfig
+keybow-usbtest: CFLAGS+=-static -Wall -DKEYBOW_DEBUG -DKEYBOW_HOME='"../sdcard"' $(CFLAGS_ALL) -lusbgx -lconfig
 keybow-usbtest: keybow.c lights.c lua-config.c gadget-hid.c serial.c
 	$(CC) $^ $(CFLAGS) -o $@
 
