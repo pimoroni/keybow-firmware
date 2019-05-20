@@ -20,8 +20,8 @@ function tick(time)
        note_index = math.floor(note_index)
        note = sequence[note_index] - 12
        if not (note == last_note) then
-           keybow_send_midi_note(0, last_note, 0x7f, false)
-           keybow_send_midi_note(0, note, 0x7f, true)
+           keybow.send_midi_note(0, last_note, 0x7f, false)
+           keybow.send_midi_note(0, note, 0x7f, true)
             if not (next_sequence == false) then
              sequence = next_sequence
              next_sequence = false
@@ -30,23 +30,23 @@ function tick(time)
        last_note = note
           else
        if last_note > 0 then
-           keybow_send_midi_note(0, last_note, 0x7f, false)
+           keybow.send_midi_note(0, last_note, 0x7f, false)
        end
    end
 end
 
 function setup()
     for x=0, 0x7f do
-    keybow_send_midi_note(0, x, 0x7f, false)
+    keybow.send_midi_note(0, x, 0x7f, false)
     end
 end
 
 -- Key mappings --
 
 function chord(a, b, c, pressed)
-    keybow_send_midi_note(0, a, 0x7f, pressed)
-    keybow_send_midi_note(0, b, 0x7f, pressed)
-    keybow_send_midi_note(0, c, 0x7f, pressed)
+    keybow.send_midi_note(0, a, 0x7f, pressed)
+    keybow.send_midi_note(0, b, 0x7f, pressed)
+    keybow.send_midi_note(0, c, 0x7f, pressed)
 end
 
 function handle_key_00(pressed)

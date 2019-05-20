@@ -229,6 +229,12 @@ function keybow.release_key(key)
     keybow.set_key(key, false)
 end
 
+-- MIDI
+
+function keybow.send_midi_note(channel, note, velocity, pressed)
+    keybow_send_midi_note(channel, note, velocity, pressed)
+end
+
 -- Keybow Mini
 
 function keybow.use_mini()
