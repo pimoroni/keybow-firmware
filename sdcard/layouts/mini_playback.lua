@@ -1,7 +1,7 @@
 require "keybow"
 
 -- Keybow MINI media playback controls --
-	
+
 function setup()
     keybow.use_mini()
     keybow.auto_lights(false)
