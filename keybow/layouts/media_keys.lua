@@ -1,5 +1,7 @@
 require "keybow"
 
+-- Media controls --
+
 -- Key mappings --
 
 function handle_key_00(pressed)

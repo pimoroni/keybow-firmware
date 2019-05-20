@@ -1,57 +1,14 @@
 require "keybow"
+require "layouts/default" -- Numberpad
 
-function tick(t)
-    print(t)
-end
+-- Custom layouts (uncomment to enable) --
 
--- Standard number pad mapping --
-
--- Key mappings --
-
-function handle_key_00(pressed)
-    keybow.set_key("0", pressed)
-end
-
-function handle_key_01(pressed)
-    keybow.set_key(".", pressed)
-end
-
-function handle_key_02(pressed)
-    keybow.set_key(keybow.ENTER, pressed)
-end
-
-function handle_key_03(pressed)
-    keybow.set_key("1", pressed)
-end
-
-function handle_key_04(pressed)
-    keybow.set_key("2", pressed)
-end
-
-function handle_key_05(pressed)
-    keybow.set_key("3", pressed)
-end
-
-function handle_key_06(pressed)
-    keybow.set_key("4", pressed)
-end
-
-function handle_key_07(pressed)
-    keybow.set_key("5", pressed)
-end
-
-function handle_key_08(pressed)
-    keybow.set_key("6", pressed)
-end
-
-function handle_key_09(pressed)
-    keybow.set_key("7", pressed)
-end
-
-function handle_key_10(pressed)
-    keybow.set_key("8", pressed)
-end
-
-function handle_key_11(pressed)
-    keybow.set_key("9", pressed)
-end
+-- require "layouts/boilerplate" -- Handy bits of boilerplate text like Lorem Ipsum
+-- require "layouts/lightroom" -- Handy hotkeys for Adobe Lightroom Classic CC
+-- require "layouts/pico8" -- Controls for Pico-8
+-- require "layouts/mediakeys" -- Basic media controls (play/pause, volume etc)
+-- require "layouts/midi_keys" -- Experimental MIDI layout
+-- require "layouts/blink" -- Numberpad with light feedback
+-- require "layouts/mini" -- Keybow MINI example layout
+-- require "layouts/mini_volume" -- Keybow MINI volume controls
+-- require "layouts/mini_playback" -- Keybow MINI media playback controls

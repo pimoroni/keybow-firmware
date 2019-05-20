@@ -1,5 +1,7 @@
 require "keybow"
 
+-- Experimental MIDI layout --
+
 arp = false
 arp_start = 0
 last_note = 0
@@ -38,8 +40,6 @@ function setup()
     keybow_send_midi_note(0, x, 0x7f, false)
     end
 end
-
--- Standard number pad mapping --
 
 -- Key mappings --
 
