@@ -11,6 +11,7 @@ usbg_gadget *g;
 usbg_config *c;
 usbg_function *f_hid;
 usbg_function *f_midi;
+usbg_function *f_acm0;
 
 int initUSB();
 int cleanupUSB();

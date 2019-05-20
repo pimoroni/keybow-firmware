@@ -1,12 +1,14 @@
 require "keybow"
 
+-- Keybow MINI --
+
 function setup()
     keybow.use_mini()
     keybow.auto_lights(false)
     keybow.clear_lights()
 end
 
--- MINI Key mappings --
+-- Key mappings --
 
 function handle_minikey_00(pressed)
     keybow.set_key("0", pressed)

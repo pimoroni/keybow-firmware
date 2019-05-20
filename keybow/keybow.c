@@ -1,11 +1,9 @@
 #include "keybow.h"
 
+#include "serial.h"
+
 #ifndef KEYBOW_NO_USB_HID
 #include "gadget-hid.h"
-#endif
-
-#ifndef KEYBOW_HOME
-#define KEYBOW_HOME "/boot/"
 #endif
 
 #include "lights.h"
@@ -174,6 +172,8 @@ int main() {
     initLights();
     read_png_file("default.png");
 
+    serial_open();
+
     printf("Running...\n");
     running = 1;
     signal(SIGINT, signal_handler);
@@ -201,8 +201,10 @@ int main() {
 
     printf("Closing LUA\n");
     luaClose();
+#ifndef KEYBOW_NO_USB_HID
     printf("Cleanup USB\n");
     cleanupUSB();
+#endif
     printf("Cleanup BCM2835\n");
     bcm2835_close();
 

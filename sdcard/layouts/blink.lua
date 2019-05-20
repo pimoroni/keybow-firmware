@@ -1,6 +1,8 @@
 require "keybow"
 
-function setup() -- Set custom lights up
+-- Standard numberpad with light feedback --
+
+function setup()
     keybow.auto_lights(false)
     keybow.clear_lights()
 end
