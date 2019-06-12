@@ -6,7 +6,7 @@ require "layouts/default" -- Numberpad
 -- require "layouts/boilerplate" -- Handy bits of boilerplate text like Lorem Ipsum
 -- require "layouts/lightroom" -- Handy hotkeys for Adobe Lightroom Classic CC
 -- require "layouts/pico8" -- Controls for Pico-8
--- require "layouts/mediakeys" -- Basic media controls (play/pause, volume etc)
+-- require "layouts/media_keys" -- Basic media controls (play/pause, volume etc)
 -- require "layouts/midi_keys" -- Experimental MIDI layout
 -- require "layouts/blink" -- Numberpad with light feedback
 -- require "layouts/mini" -- Keybow MINI example layout
