@@ -45,6 +45,19 @@ keybow.F10 = 0x43
 keybow.F11 = 0x44
 keybow.F12 = 0x45
 
+keybow.F13 = 0x68
+keybow.F14 = 0x69
+keybow.F15 = 0x6a
+keybow.F16 = 0x6b
+keybow.F17 = 0x6c
+keybow.F18 = 0x6d
+keybow.F19 = 0x6e
+keybow.F20 = 0x6f
+keybow.F21 = 0x70
+keybow.F22 = 0x71
+keybow.F23 = 0x72
+keybow.F24 = 0x73
+
 keybow.KEY_DOWN = true
 keybow.KEY_UP = false
 
