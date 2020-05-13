@@ -70,6 +70,10 @@ keybow.MEDIA_MUTE = 5
 keybow.MEDIA_VOL_UP = 6
 keybow.MEDIA_VOL_DOWN = 7
 
+keybow.MOUSE_LMB = 0
+keybow.MOUSE_RMB = 1
+keybow.MOUSE_MMB = 2
+
 -- Functions exposed from C
 
 function keybow.set_modifier(key, state)
@@ -78,6 +82,10 @@ end
 
 function keybow.set_media_key(key, state)
     keybow_set_media_key(key, state)
+end
+
+function keybow.set_mouse_button(button, state)
+    keybow_set_mousebutton(button, state)
 end
 
 function keybow.sleep(time)
