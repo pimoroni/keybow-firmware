@@ -382,6 +382,22 @@ static int l_set_mousebutton(lua_State *L) {
     return 1;
 }
 
+static int l_set_mousemove(lua_State *L) {
+    int nargs = lua_gettop(L);
+    signed short x = luaL_checknumber(L, 1);
+    signed short y = luaL_checknumber(L, 2);
+    lua_pop(L, nargs);
+
+    printf("l_set_mousemove %d %d\n", x, y);
+
+    mouse_x = x;
+    mouse_y = y;
+
+    lua_pushboolean(L, 1);
+    sendMouseReport();
+    return 1;
+}
+
 static int l_load_pattern(lua_State *L) {
     int nargs = lua_gettop(L);
     size_t length;
@@ -430,6 +446,9 @@ int initLUA() {
 
     lua_pushcfunction(L, l_set_mousebutton);
     lua_setglobal(L, "keybow_set_mousebutton");
+
+    lua_pushcfunction(L, l_set_mousemove);
+    lua_setglobal(L, "keybow_set_mousemove");
 
     lua_pushcfunction(L, l_send_text);
     lua_setglobal(L, "keybow_text");

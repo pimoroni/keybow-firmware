@@ -88,6 +88,10 @@ function keybow.set_mouse_button(button, state)
     keybow_set_mousebutton(button, state)
 end
 
+function keybow.set_mouse_movement(x, y)
+    keybow_set_mousemove(x, y)
+end
+
 function keybow.sleep(time)
     keybow_sleep(time)
 end
