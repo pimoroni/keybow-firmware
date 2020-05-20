@@ -15,6 +15,7 @@ bcm2835-*/doc/Doxyfile
 bcm2835-*/doc/doxyfile.stamp
 bcm2835-*/doc/html/
 bcm2835-*/config.h
+bcm2835-*/config.h.in~
 bcm2835-*/build
 libserialport/build
 libusbgx/build
