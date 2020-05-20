@@ -18,17 +18,24 @@ You can grab the latest `keybow-x.x.x.zip` file from https://github.com/pimoroni
 
 ## Building
 
+You'll need a build toolchain.
+
+```
+sudo apt install build-essential autoconf libtool
+```
+
 ### bcm2835
 
 Build the bcm2835 library and install into a local build directory for static linking.
 
 ```
-cd bcm2835-x.xx
+cd bcm2835-*.**
 autoreconf -f -i
 mkdir build
 ./configure --prefix=$(pwd)/build
 make
 make install
+cd ..
 ```
 
 ### libusbgx
@@ -41,6 +48,7 @@ mkdir build
 ./configure --prefix=$(pwd)/build
 make
 make install
+cd ..
 ```
 
 ### lua
@@ -49,4 +57,5 @@ make install
 sudo apt install libreadline-dev
 cd lua-5.3.5
 make linux
+cd ..
 ```
