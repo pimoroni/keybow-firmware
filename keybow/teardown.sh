@@ -6,6 +6,7 @@ echo "" > $GADGETDIR/UDC
 rmdir $GADGETDIR/configs/*/strings/*
 rm -f $GADGETDIR/configs/*/keyboard
 rm -f $GADGETDIR/configs/*/midi
+rm -f $GADGETDIR/configs/*/*
 rmdir $GADGETDIR/configs/*
 rmdir $GADGETDIR/functions/*
 rmdir $GADGETDIR/strings/*
