@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Requirements
-      run:
+      run: |
         sudo apt update
         sudo apt install autoconf libtool libconfig-dev libreadline-dev
     - name: Dependencies
