@@ -73,6 +73,16 @@ void sendHIDReport(){
     }
 }
 
+void sendMouseReport(){
+    unsigned char buf[MOUSE_REPORT_SIZE + 1];
+    buf[0] = 3;
+    buf[1] = mouse_buttons;
+    buf[2] = mouse_x;
+    buf[3] = mouse_y;
+    write(hid_output, buf, MOUSE_REPORT_SIZE + 1);
+    usleep(1000);
+}
+
 int toggleMediaKey(unsigned short modifier) {
     if(media_keys & (1 << modifier)){
         media_keys &= ~(1 << modifier);
@@ -355,6 +365,39 @@ static int l_set_key(lua_State *L) {
     return 1;
 }
 
+static int l_set_mousebutton(lua_State *L) {
+    int nargs = lua_gettop(L);
+    unsigned short button = luaL_checknumber(L, 1);
+    unsigned short state = lua_toboolean(L, 2);
+    lua_pop(L, nargs);
+
+    printf("l_set_mousebutton %02x %d\n", button, state);
+    if (state) {
+        mouse_buttons |= (state << button);
+    } else {
+        mouse_buttons &= (state << button);
+    }
+    lua_pushboolean(L, 1);
+    sendMouseReport();
+    return 1;
+}
+
+static int l_set_mousemove(lua_State *L) {
+    int nargs = lua_gettop(L);
+    signed short x = luaL_checknumber(L, 1);
+    signed short y = luaL_checknumber(L, 2);
+    lua_pop(L, nargs);
+
+    printf("l_set_mousemove %d %d\n", x, y);
+
+    mouse_x = x;
+    mouse_y = y;
+
+    lua_pushboolean(L, 1);
+    sendMouseReport();
+    return 1;
+}
+
 static int l_load_pattern(lua_State *L) {
     int nargs = lua_gettop(L);
     size_t length;
@@ -400,6 +443,12 @@ int initLUA() {
 
     lua_pushcfunction(L, l_set_key);
     lua_setglobal(L, "keybow_set_key");
+
+    lua_pushcfunction(L, l_set_mousebutton);
+    lua_setglobal(L, "keybow_set_mousebutton");
+
+    lua_pushcfunction(L, l_set_mousemove);
+    lua_setglobal(L, "keybow_set_mousemove");
 
     lua_pushcfunction(L, l_send_text);
     lua_setglobal(L, "keybow_text");
@@ -496,5 +545,6 @@ void luaClose(void){
     }
     lua_close(L);
     sendHIDReport();
+    sendMouseReport();
     close(hid_output);
 }

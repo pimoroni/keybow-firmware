@@ -5,6 +5,7 @@
 #define VENDOR          0x1d6b
 #define PRODUCT         0x0104
 #define HID_REPORT_SIZE 16
+#define MOUSE_REPORT_SIZE 3
 
 usbg_state *s;
 usbg_gadget *g;
