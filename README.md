@@ -21,7 +21,7 @@ You can grab the latest `keybow-x.x.x.zip` file from https://github.com/pimoroni
 You'll need a build toolchain.
 
 ```
-sudo apt install build-essential autoconf libtool
+sudo apt install build-essential autoconf libtool libconfig-dev libpng-dev
 ```
 
 ### bcm2835
