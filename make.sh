@@ -18,4 +18,4 @@ autoreconf -i
 ./configure --prefix=$(pwd)/build
 make
 make install
-cd $WoRKING_DIR
+cd $WORKING_DIR
