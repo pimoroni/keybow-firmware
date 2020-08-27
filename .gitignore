@@ -19,3 +19,5 @@ bcm2835-*/config.h.in~
 bcm2835-*/build
 libserialport/build
 libusbgx/build
+libusbgx/m4
+libusbgx/libusbgx.p4
