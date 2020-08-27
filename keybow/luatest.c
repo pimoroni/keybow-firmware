@@ -600,6 +600,7 @@ void luaClose(void){
 
 int main() {
     int ret;
+    chdir(KEYBOW_HOME);
 
     ret = initLUA();
     if (ret != 0){
