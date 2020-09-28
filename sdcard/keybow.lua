@@ -1,9 +1,11 @@
 keybow = {}
 
-local KEYCODES             = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '\n', '•', '\x08', '\t', ' ', '-', '=', '[', ']', '\\', '#', ';', "'", '`', ',', '.', '/'}
-local SHIFTED_KEYCODES     = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '•', '•', '•', '•', '•', '_', '+', '{', '}', '|', '~', ':', '"', '~', '<', '>', '?'}
-local ALTGRD_KEYCODES      = {'á', '•', '•', '•', 'é', '•', '•', '•', 'í', '•', '•', '•', '•', '•', 'ó', '•', '•', '•', '•', '•', 'ú', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•'}
-local SHIFTALTGRD_KEYCODES = {'Á', '•', '•', '•', 'É', '•', '•', '•', 'Í', '•', '•', '•', '•', '•', 'Ó', '•', '•', '•', '•', '•', 'Ú', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•'}
+--To change keyboard layout, change the name of the language in the keycode attributes below. Available layouts are DANISH, ENGLISH and NORWEGIAN.
+
+local KEYCODES             = ENGLISH
+local SHIFTED_KEYCODES     = SHIFTED_ENGLISH
+local ALTGRD_KEYCODES      = ALTGRD_ENGLISH
+local SHIFTALTGRD_KEYCODES = SHIFTALTGRD_ENGLISH
 
 keybow.LEFT_CTRL = 0
 keybow.LEFT_SHIFT = 1
