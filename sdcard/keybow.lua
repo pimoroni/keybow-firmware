@@ -1,3 +1,5 @@
+require "keyboard"
+
 keybow = {}
 
 --To change keyboard layout, change the name of the language in the keycode attributes below. Available layouts are DANISH, ENGLISH and NORWEGIAN.
