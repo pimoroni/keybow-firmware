@@ -1,7 +1,9 @@
 keybow = {}
 
-local KEYCODES         = "abcdefghijklmnopqrstuvwxyz1234567890\n\a\b\t -=[]\\#;'`,./"
-local SHIFTED_KEYCODES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()\a\a\a\a\a_+{}|~:\"~<>?"
+local KEYCODES             = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '\n', '•', '\x08', '\t', ' ', '-', '=', '[', ']', '\\', '#', ';', "'", '`', ',', '.', '/'}
+local SHIFTED_KEYCODES     = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '•', '•', '•', '•', '•', '_', '+', '{', '}', '|', '~', ':', '"', '~', '<', '>', '?'}
+local ALTGRD_KEYCODES      = {'á', '•', '•', '•', 'é', '•', '•', '•', 'í', '•', '•', '•', '•', '•', 'ó', '•', '•', '•', '•', '•', 'ú', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•'}
+local SHIFTALTGRD_KEYCODES = {'Á', '•', '•', '•', 'É', '•', '•', '•', 'Í', '•', '•', '•', '•', '•', 'Ó', '•', '•', '•', '•', '•', 'Ú', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•', '•'}
 
 keybow.LEFT_CTRL = 0
 keybow.LEFT_SHIFT = 1
@@ -100,12 +102,22 @@ function keybow.usleep(time)
     keybow_usleep(time)
 end
 
-function keybow.text(text)
+function keybow.ascii_text(text)
     for i = 1, #text do        
         local c = text:sub(i, i)
         keybow.tap_key(c)
     end
 
+    keybow.set_modifier(keybow.RIGHT_ALT, false)
+    keybow.set_modifier(keybow.LEFT_SHIFT, false)
+end
+
+function keybow.text(text)
+    for uchar in string.gmatch(text, "([%z\1-\127\194-\244][\128-\191]*)") do
+        keybow.tap_key(uchar)
+    end
+
+    keybow.set_modifier(keybow.RIGHT_ALT, false)
     keybow.set_modifier(keybow.LEFT_SHIFT, false)
 end
 
@@ -199,20 +211,31 @@ function keybow.ascii_to_hid(key)
     return code + 3
 end
 
+function keybow.find_keycode(keycode_map, keycode)
+    for k, v in ipairs(keycode_map) do
+        if v == keycode then return k end
+    end
+    return nil
+end
+
 function keybow.set_key(key, pressed)
     if type(key) == "string" then
-        local hid_code = nil
-        local shifted = SHIFTED_KEYCODES:find(key, 1, true) ~= nil
+        local normal = keybow.find_keycode(KEYCODES, key)
+        local shifted = keybow.find_keycode(SHIFTED_KEYCODES, key)
+        local altgred = keybow.find_keycode(ALTGRD_KEYCODES, key)
+        local shiftaltgred = keybow.find_keycode(SHIFTALTGRD_KEYCODES, key)
 
-        if shifted then
-            hid_code = SHIFTED_KEYCODES:find(key, 1, true)
-        else
-            hid_code = KEYCODES:find(key, 1, true)
+        local hid_code = shiftaltgred or shifted or altgred or normal
+
+        if shiftaltgred then
+            shifted = true
+            altgred = true
         end
 
         if not (hid_code == nil) then
             hid_code = hid_code + 3
             if shifted then keybow.set_modifier(keybow.LEFT_SHIFT, pressed) end
+            if altgred then keybow.set_modifier(keybow.RIGHT_ALT, pressed) end
             keybow_set_key(hid_code, pressed)
         end
 
