@@ -1,11 +1,6 @@
-require "english" --Change name of language to change keyboard layout. Available layouts are "danish", "english" and "norwegian" 
+require "keyboards/english" -- Change name of language to change keyboard layout. Available layouts are "danish", "english" and "norwegian"
 
 keybow = {}
-
-local KEYCODES             = KEYCODES
-local SHIFTED_KEYCODES     = SHIFTED_KEYCODES
-local ALTGRD_KEYCODES      = ALTGRD_KEYCODES
-local SHIFTALTGRD_KEYCODES = SHIFTALTGRD_KEYCODES
 
 keybow.LEFT_CTRL = 0
 keybow.LEFT_SHIFT = 1
