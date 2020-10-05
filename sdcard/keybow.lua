@@ -1,4 +1,4 @@
-require "keyboards/english" -- Change name of language to change keyboard layout. Available layouts are "danish", "english" and "norwegian"
+require "keyboards/english" -- Change name of language to change keyboard layout. Available layouts are "belgian_french", "danish", "english" and "norwegian"
 
 keybow = {}
 
