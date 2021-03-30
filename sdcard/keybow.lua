@@ -60,6 +60,26 @@ keybow.F24 = 0x73
 keybow.KEY_DOWN = true
 keybow.KEY_UP = false
 
+-- Key Pad 
+
+keybow.KPSLASH = 0x54
+keybow.KPASTERISK = 0x55
+keybow.KPMINUS = 0x56
+keybow.KPPLUS = 0x57
+keybow.KPENTER = 0x58
+keybow.KP1 = 0x59
+keybow.KP2 = 0x5a
+keybow.KP3 = 0x5b
+keybow.KP4 = 0x5c
+keybow.KP5 = 0x5d
+keybow.KP6 = 0x5e
+keybow.KP7 = 0x5f
+keybow.KP8 = 0x60
+keybow.KP9 = 0x61
+keybow.KP0 = 0x62
+keybow.KPDOT = 0x63
+keybow.KPEQUAL = 0x67
+
 keybow.MEDIA_NEXT = 0
 keybow.MEDIA_PREV = 1
 keybow.MEDIA_STOP = 2
