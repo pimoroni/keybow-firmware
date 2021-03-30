@@ -1,11 +1,11 @@
-CFLAGS_ALL=-I../libusbgx/build/include -I../bcm2835-1.58/build/include -L../bcm2835-1.58/build/lib -I../lua-5.3.5/src -L../libusbgx/build/lib -L../libserialport/build/lib -L../lua-5.3.5/src -lpng -lz -lpthread -llua -lm -lbcm2835 -ldl
+CFLAGS_ALL=-I../libusbgx/build/include -I../bcm2835-1.68/build/include -L../bcm2835-1.68/build/lib -I../lua-5.4.0/src -L../libusbgx/build/lib -L../libserialport/build/lib -L../lua-5.4.0/src -lpng -lz -lpthread -llua -lm -lbcm2835 -ldl
 
 keybow: CFLAGS+=-static $(CFLAGS_ALL) -lusbgx -lconfig
 keybow: keybow.c lights.c lua-config.c gadget-hid.c serial.c
 	$(CC)  $^ $(CFLAGS) -o $@
 
 
-luatest: CFLAGS+=-static -I../lua-5.3.5/src -L../lua-5.3.5/src -DKEYBOW_DEBUG -DKEYBOW_HOME='"../sdcard"' -llua -lm -ldl
+luatest: CFLAGS+=-static -I../lua-5.4.0/src -L../lua-5.4.0/src -DKEYBOW_DEBUG -DKEYBOW_HOME='"../sdcard"' -llua -lm -ldl
 luatest: luatest.c
 	$(CC) $^ $(CFLAGS) -o $@
 

@@ -6,6 +6,7 @@ autom4te.cache/
 .deps/
 keybow/keybow
 keybow/keybow-test
+keybow/luatest
 lua*/src/lua
 lua*/src/luac
 bcm2835-*/Makefile
