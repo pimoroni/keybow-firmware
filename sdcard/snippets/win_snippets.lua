@@ -1,4 +1,5 @@
 require "keybow"
+require "snippets/morekeys"
 
 win_snippets = {}
 
@@ -141,4 +142,23 @@ end
 
 function win_snippets.reply_mail()
 	modifier("r", keybow.LEFT_CTRL)
+end
+
+-- Unicode input --
+
+function win_snippets.unicode(code)
+    keybow.set_modifier(keybow.LEFT_ALT, keybow.KEY_DOWN)
+    keybow.tap_key(keybow.KPPLUS)
+
+    if code <= 0xffff then
+        for i = 3, 0, -1 do
+            keybow.tap_key(string.sub("0123456789abcdef", ((code >> (i * 4)) & 0x0f) + 1, ((code >> (i * 4)) & 0x0f) + 1))
+        end
+    else
+        for i = 4, 0, -1 do
+            keybow.tap_key(string.sub("0123456789abcdef", ((code >> (i * 4)) & 0x0f) + 1, ((code >> (i * 4)) & 0x0f) + 1))
+        end
+    end
+
+    keybow.set_modifier(keybow.LEFT_ALT, keybow.KEY_UP)
 end

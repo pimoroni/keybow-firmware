@@ -93,3 +93,21 @@ function linux_snippets.u_open_new_instance(place)
     -- opens new instance of app in Ubuntu Gnome's sidebar at the place number specified in 'place', 'place' must be a string!
     modifier(place, keybow.LEFT_META, keybow.LEFT_SHIFT)
 end
+
+-- Unicode input --
+
+function linux_snippets.unicode(code)
+    modifier("u", keybow.LEFT_CTRL, keybow.LEFT_SHIFT)
+
+    if code <= 0xffff then
+        for i = 3, 0, -1 do
+            keybow.tap_key(string.sub("0123456789abcdef", ((code >> (i * 4)) & 0x0f) + 1, ((code >> (i * 4)) & 0x0f) + 1))
+        end
+    else
+        for i = 4, 0, -1 do
+            keybow.tap_key(string.sub("0123456789abcdef", ((code >> (i * 4)) & 0x0f) + 1, ((code >> (i * 4)) & 0x0f) + 1))
+        end
+    end
+
+    keybow.tap_enter()
+end
