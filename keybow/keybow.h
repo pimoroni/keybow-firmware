@@ -9,21 +9,12 @@
 #define KEYBOW_HOME "/boot/"
 #endif
 
-pthread_mutex_t lights_mutex;
-
-unsigned short last_state[NUM_KEYS];
-
-int lights_auto;
-
 typedef struct keybow_key {
     unsigned short gpio_bcm;
     unsigned short hid_code;
     unsigned short led_index;
 } keybow_key;
 
-unsigned short mapping_table[36];
-
-void *run_lights(void *void_ptr);
 keybow_key get_key(unsigned short index);
 int initUSB();
 int initGPIO();

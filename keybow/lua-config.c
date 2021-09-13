@@ -4,111 +4,10 @@
 #include "gadget-hid.h"
 #include "serial.h"
 
-int isPressed(unsigned short hid_code){
-    int x;
-    for(x = 0; x < 14; x++){
-        if(pressed_keys[x] == hid_code){
-            return 1;
-        }
-    }
-    return 0;
-}
 
-int releaseKey(unsigned short hid_code){
-    int x;
-    for(x = 0; x < 14; x++){
-        if(pressed_keys[x] == hid_code){
-            pressed_keys[x] = 0;
-            return 1;
-        }
-    }
-    return 0;
-}
-
-void pressKey(unsigned short hid_code){
-    int x;
-    for(x = 0; x < 14; x++){
-        if(pressed_keys[x] == 0){
-            pressed_keys[x] = hid_code;
-            return;
-        }
-    }
-
-    // No empty slot found
-}
-
-void sendMIDINote(int channel, int note, int velocity, int state) {
-    unsigned char buf[3];
-    if(state == 1){
-        buf[0] = 0x90;
-    }
-    else
-    {
-        buf[0] = 0x80;
-    }
-    buf[0] |= channel & 0xf;
-    buf[1] = note & 0x7f;
-    buf[2] = velocity & 0x7f;
-    write(midi_output, buf, 3);
-}
-
-void sendHIDReport(){
-    int x;
-    unsigned char buf[16];
-    buf[0] = 1; // report id
-    buf[1] = modifiers;
-    buf[2] = 0; // padding
-    for(x = 3; x < 16; x++){
-        buf[x] = pressed_keys[x-3];
-    }
-    write(hid_output, buf, HID_REPORT_SIZE);
-    usleep(1000);
-
-    if(media_keys != last_media_keys){
-        buf[0] = 2; // report id
-        buf[1] = media_keys; // media keys
-        write(hid_output, buf, 2);
-        usleep(1000);
-        last_media_keys = media_keys;
-    }
-}
-
-void sendMouseReport(){
-    unsigned char buf[MOUSE_REPORT_SIZE + 1];
-    buf[0] = 3;
-    buf[1] = mouse_buttons;
-    buf[2] = mouse_x;
-    buf[3] = mouse_y;
-    write(hid_output, buf, MOUSE_REPORT_SIZE + 1);
-    usleep(1000);
-}
-
-int toggleMediaKey(unsigned short modifier) {
-    if(media_keys & (1 << modifier)){
-        media_keys &= ~(1 << modifier);
-    }
-    else
-    {
-        media_keys |= (1 << modifier);
-    }
-    sendHIDReport();
-
-    return (media_keys & (1 << modifier)) > 0;
-}
-
-
-int toggleModifier(unsigned short modifier) {
-    if(modifiers & (1 << modifier)){
-        modifiers &= ~(1 << modifier);
-    }
-    else
-    {
-        modifiers |= (1 << modifier);
-    }
-    sendHIDReport();
-
-    return (modifiers & (1 << modifier)) > 0;
-}
+int has_tick;
+unsigned long long tick_start;
+lua_State* L;
 
 static int l_load(lua_State *L) {
     int nargs = lua_gettop(L);
@@ -162,7 +61,6 @@ static int l_save(lua_State *L) {
         fclose(fd);
     }
 
-    //lua_pushboolean(L, 1);
     free(filepath);
     return 0;
 }
@@ -172,7 +70,6 @@ static int l_serial_read(lua_State *L) {
     lua_pop(L, nargs);
     const char *data = serial_read();
     lua_pushstring(L, data);
-    //free(data);
     return 1;
 }
 
@@ -215,37 +112,15 @@ static int l_send_midi_note(lua_State *L) {
     return 0;
 }
 
-static int l_get_modifier(lua_State *L) {
-    int nargs = lua_gettop(L);
-    unsigned short index = luaL_checknumber(L, 1);
-    unsigned short current = (modifiers & (1 << index)) > 0;
-    lua_pop(L, nargs);
-    lua_pushboolean(L, current);
-    return 1;
-}
-
 static int l_set_modifier(lua_State *L) {
     int nargs = lua_gettop(L);
     unsigned short index = luaL_checknumber(L, 1);
     unsigned short state = lua_toboolean(L, 2);
     lua_pop(L, nargs);
 
-    unsigned short current = (modifiers & (1 << index)) > 0;
+    unsigned short changed = setModifier(index, state);
 
-#ifdef KEYBOW_DEBUG
-    printf("Modifier %d requested to %d, current: %d\n", index, state, current);
-#endif
-
-    if(current != state){
-        modifiers &= ~(1 << index);
-        modifiers |= (state << index);
-#ifdef KEYBOW_DEBUG
-        printf("Modifier %d set to %d\n", index, state);
-#endif
-        sendHIDReport();
-    }
-
-    lua_pushboolean(L, current != state);
+    lua_pushboolean(L, changed);
     return 1;
 }
 
@@ -255,22 +130,9 @@ static int l_set_media_key(lua_State *L) {
     unsigned short state = lua_toboolean(L, 2);
     lua_pop(L, nargs);
 
-    unsigned short current = (media_keys & (1 << index)) > 0;
+    unsigned short changed = setMediaKey(index, state);
 
-#ifdef KEYBOW_DEBUG
-    printf("Media Key %d requested to %d, current: %d\n", index, state, current);
-#endif
-
-    if(current != state){
-        media_keys &= ~(1 << index);
-        media_keys |= (state << index);
-#ifdef KEYBOW_DEBUG
-        printf("Media Key %d set to %d\n", index, state);
-#endif
-        sendHIDReport();
-    }
-
-    lua_pushboolean(L, current != state);
+    lua_pushboolean(L, changed);
     return 1;
 }
 
@@ -372,13 +234,8 @@ static int l_set_mousebutton(lua_State *L) {
     lua_pop(L, nargs);
 
     printf("l_set_mousebutton %02x %d\n", button, state);
-    if (state) {
-        mouse_buttons |= (state << button);
-    } else {
-        mouse_buttons &= (state << button);
-    }
+    setMouseButton(button, state);
     lua_pushboolean(L, 1);
-    sendMouseReport();
     return 1;
 }
 
@@ -390,11 +247,9 @@ static int l_set_mousemove(lua_State *L) {
 
     printf("l_set_mousemove %d %d\n", x, y);
 
-    mouse_x = x;
-    mouse_y = y;
+    setMouseXY(x, y);
 
     lua_pushboolean(L, 1);
-    sendMouseReport();
     return 1;
 }
 
@@ -407,9 +262,9 @@ static int l_load_pattern(lua_State *L) {
     char filename[length + 10];
     sprintf(filename, "%s.png", pattern);
 
-    pthread_mutex_lock(&lights_mutex);
+    lights_lock();
     int result = read_png_file(filename);
-    pthread_mutex_unlock(&lights_mutex);
+    lights_unlock();
     
     lua_pushboolean(L, result == 0);
 
@@ -424,8 +279,6 @@ static int l_get_millis(lua_State *L) {
 }
 
 int initLUA() {
-    modifiers = 0;
-
     L = luaL_newstate();
     luaL_openlibs(L);
 
@@ -538,13 +391,7 @@ void luaTick(void){
 }
 
 void luaClose(void){
-    int x;
-    modifiers = 0;
-    for(x = 0; x < 14; x++){
-        pressed_keys[x] = 0;        
-    }
     lua_close(L);
     sendHIDReport();
     sendMouseReport();
-    close(hid_output);
 }

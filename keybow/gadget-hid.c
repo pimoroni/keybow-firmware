@@ -1,10 +1,64 @@
 #include "gadget-hid.h"
+
 #include <errno.h>
 #include <stdio.h>
-#include <linux/usb/ch9.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <usbg/usbg.h>
 #include <usbg/function/hid.h>
 #include <usbg/function/midi.h>
+
+usbg_state *s;
+usbg_gadget *g;
+usbg_config *c;
+usbg_function *f_hid;
+usbg_function *f_midi;
+usbg_function *f_acm0;
+
+unsigned short last_media_keys;
+unsigned short media_keys;
+unsigned short modifiers;
+unsigned short pressed_keys[14];
+
+unsigned short mouse_buttons;
+signed short mouse_x;
+signed short mouse_y;
+
+int hid_output;
+int midi_output;
+
+int isPressed(unsigned short hid_code){
+    int x;
+    for(x = 0; x < 14; x++){
+        if(pressed_keys[x] == hid_code){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int releaseKey(unsigned short hid_code){
+    int x;
+    for(x = 0; x < 14; x++){
+        if(pressed_keys[x] == hid_code){
+            pressed_keys[x] = 0;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void pressKey(unsigned short hid_code){
+    int x;
+    for(x = 0; x < 14; x++){
+        if(pressed_keys[x] == 0){
+            pressed_keys[x] = hid_code;
+            return;
+        }
+    }
+
+    // No empty slot found
+}
 
 static char report_desc[] = {
     0x05, 0x01, // USAGE_PAGE (Generic Desktop)
@@ -116,7 +170,41 @@ static char report_desc[] = {
     0xc0        // END_COLLECTION
 };
 
+int initHID() {
+#ifndef KEYBOW_NO_USB_HID
+    modifiers = 0;
+    media_keys = 0;
+
+    int x;
+    for(x = 0; x < 14; x++){
+        pressed_keys[x] = 0;        
+    }
+
+    do {
+        hid_output = open("/dev/hidg0", O_WRONLY | O_NDELAY);
+    } while (hid_output == -1 && errno == EINTR);
+    if (hid_output == -1){
+        printf("Error opening /dev/hidg0 for writing.\n");
+        return 1;
+    }
+
+    do {
+        midi_output = open("/dev/snd/midiC1D0", O_WRONLY | O_NDELAY);
+    } while (midi_output == -1 && errno == EINTR);
+    if (midi_output == -1){
+        printf("Error opening /dev/snd/midiC1D0 for writing.\n");
+        return 1;
+    }
+#else
+    printf("Opening /dev/null for output.\n");
+    hid_output = open("/dev/null", O_WRONLY);
+    midi_output = open("/dev/null", O_WRONLY);
+#endif
+    return 0;
+}
+
 int initUSB() {
+#ifndef KEYBOW_NO_USB_HID
     int ret = -EINVAL;
     int usbg_ret;
 
@@ -247,9 +335,13 @@ out2:
 
 out1:
     return ret;
+#else
+    return 0;
+#endif
 }
 
 int cleanupUSB(){
+#ifndef KEYBOW_NO_USB_HID
     if(g){
         usbg_disable_gadget(g);
         usbg_rm_gadget(g, USBG_RM_RECURSE);
@@ -257,5 +349,149 @@ int cleanupUSB(){
     if(s){
         usbg_cleanup(s);
     }
+#endif
+    close(hid_output);
+    close(midi_output);
+    modifiers = 0;
+    media_keys = 0;
+
+    int x;
+    for(x = 0; x < 14; x++){
+        pressed_keys[x] = 0;        
+    }
+
     return 0;
+}
+
+void sendMIDINote(int channel, int note, int velocity, int state) {
+    unsigned char buf[3];
+    if(state == 1){
+        buf[0] = 0x90;
+    }
+    else
+    {
+        buf[0] = 0x80;
+    }
+    buf[0] |= channel & 0xf;
+    buf[1] = note & 0x7f;
+    buf[2] = velocity & 0x7f;
+    write(midi_output, buf, 3);
+}
+
+void sendHIDReport(){
+    int x;
+    unsigned char buf[16];
+    buf[0] = 1; // report id
+    buf[1] = modifiers;
+    buf[2] = 0; // padding
+    for(x = 3; x < 16; x++){
+        buf[x] = pressed_keys[x-3];
+    }
+    write(hid_output, buf, HID_REPORT_SIZE);
+    usleep(1000);
+
+    if(media_keys != last_media_keys){
+        buf[0] = 2; // report id
+        buf[1] = media_keys; // media keys
+        write(hid_output, buf, 2);
+        usleep(1000);
+        last_media_keys = media_keys;
+    }
+}
+
+void sendMouseReport(){
+    unsigned char buf[MOUSE_REPORT_SIZE + 1];
+    buf[0] = 3;
+    buf[1] = mouse_buttons;
+    buf[2] = mouse_x;
+    buf[3] = mouse_y;
+    write(hid_output, buf, MOUSE_REPORT_SIZE + 1);
+    usleep(1000);
+}
+
+void setMouseXY(signed short x, signed short y) {
+    mouse_x = x;
+    mouse_y = y;
+    sendMouseReport();
+}
+
+void setMouseButton(unsigned short button, unsigned short state){
+    if (state) {
+        mouse_buttons |= (state << button);
+    } else {
+        mouse_buttons &= (state << button);
+    }
+    sendMouseReport();
+}
+
+unsigned short getMediaKey(unsigned short index) {
+    return  (media_keys & (1 << index)) > 0;
+}
+
+unsigned short setMediaKey(unsigned short index, unsigned short state) {
+    unsigned short current = (media_keys & (1 << index)) > 0;
+
+#ifdef KEYBOW_DEBUG
+    printf("Media Key %d requested to %d, current: %d\n", index, state, current);
+#endif
+
+    if(current != state){
+        media_keys &= ~(1 << index);
+        media_keys |= (state << index);
+#ifdef KEYBOW_DEBUG
+        printf("Media Key %d set to %d\n", index, state);
+#endif
+        sendHIDReport();
+    }
+
+    return current != state;
+}
+
+int toggleMediaKey(unsigned short modifier) {
+    if(media_keys & (1 << modifier)){
+        media_keys &= ~(1 << modifier);
+    }
+    else
+    {
+        media_keys |= (1 << modifier);
+    }
+    sendHIDReport();
+
+    return (media_keys & (1 << modifier)) > 0;
+}
+
+unsigned short getModifier(unsigned short index) {
+    return  (modifiers & (1 << index)) > 0;
+}
+
+unsigned short setModifier(unsigned short index, unsigned short state) {
+    unsigned short current = (modifiers & (1 << index)) > 0;
+
+#ifdef KEYBOW_DEBUG
+    printf("Modifier %d requested to %d, current: %d\n", index, state, current);
+#endif
+
+    if(current != state){
+        modifiers &= ~(1 << index);
+        modifiers |= (state << index);
+#ifdef KEYBOW_DEBUG
+        printf("Modifier %d set to %d\n", index, state);
+#endif
+        sendHIDReport();
+    }
+
+    return current != state;
+}
+
+int toggleModifier(unsigned short modifier) {
+    if(modifiers & (1 << modifier)){
+        modifiers &= ~(1 << modifier);
+    }
+    else
+    {
+        modifiers |= (1 << modifier);
+    }
+    sendHIDReport();
+
+    return (modifiers & (1 << modifier)) > 0;
 }
