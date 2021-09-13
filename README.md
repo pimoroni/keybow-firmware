@@ -14,7 +14,7 @@ Format a micro-SD card in FAT32 format (we recommend the SD Association's [SD Ca
 
 You can grab the latest `keybow-x.x.x.zip` file from https://github.com/pimoroni/keybow-firmware/releases and unzip it directly to your SD card.
 
-Learn more about how to use Keybow on our [learning portal](https://learn.pimoroni.com/).
+Learn more about how to use Keybow on our [learning portal](https://learn.pimoroni.com/product/keybow/).
 
 ## Building
 
