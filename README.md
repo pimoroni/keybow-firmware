@@ -55,7 +55,7 @@ cd ..
 
 ```
 sudo apt install libreadline-dev
-cd lua-5.3.5
+cd lua-5.4.0
 make linux
 cd ..
 ```
