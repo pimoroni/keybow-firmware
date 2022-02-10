@@ -166,3 +166,22 @@ end
 function mac_snippets.reply_mail()
 	modifier("r", keybow.LEFT_META)
 end
+
+-- Unicode input --
+
+function mac_snippets.unicode(code)
+    keybow.set_modifier(keybow.LEFT_ALT, keybow.KEY_DOWN)
+
+    if code <= 0xffff then
+        for i = 3, 0, -1 do
+            keybow.tap_key(string.sub("0123456789abcdef", ((code >> (i * 4)) & 0x0f) + 1, ((code >> (i * 4)) & 0x0f) + 1))
+        end
+    else
+        code = (((code - 0x10000) & 0x3ff) | 0xdc00) | (((((code - 0x10000) >> 10) & 0x3ff) | 0xd800) << 16)
+        for i = 7, 0, -1 do
+            keybow.tap_key(string.sub("0123456789abcdef", ((code >> (i * 4)) & 0x0f) + 1, ((code >> (i * 4)) & 0x0f) + 1))
+        end
+    end
+
+    keybow.set_modifier(keybow.LEFT_ALT, keybow.KEY_UP)
+end
