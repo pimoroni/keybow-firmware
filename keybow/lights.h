@@ -20,21 +20,11 @@
 #define SPI_SPEED_HZ 4000000
 #define MIN_DELAY_US 500
 
-char buf[BUF_SIZE];
-
-int x, y;
-
-int width, height;
-png_byte color_type;
-png_byte bit_depth;
-png_byte color_channels;
-
-png_structp png_ptr;
-png_infop info_ptr;
-int number_of_passes;
-png_bytep * row_pointers;
+extern int lights_auto;
 
 unsigned long long millis();
+int lights_start();
+void lights_stop();
 void lights_setPixel(int x, int r, int g, int b);
 void lights_setAll(int r, int g, int b);
 void lights_show();
@@ -42,3 +32,9 @@ void lights_cleanup();
 void lights_drawPngFrame(int frame);
 int read_png_file(char* file_name);
 int initLights();
+
+int lights_getWidth();
+int lights_getHeight();
+
+void lights_lock();
+void lights_unlock();

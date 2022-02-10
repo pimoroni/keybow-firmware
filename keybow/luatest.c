@@ -8,6 +8,8 @@
 #include <lauxlib.h>
 #include <sys/time.h>
 #include <stdlib.h>
+
+
 int key_index = 0;
 
 unsigned long long millis(){
@@ -103,7 +105,6 @@ void sendMIDINote(int channel, int note, int velocity, int state) {
     buf[0] |= channel & 0xf;
     buf[1] = note & 0x7f;
     buf[2] = velocity & 0x7f;
-    // snip write(midi_output, buf, 3);
 }
 
 void sendHIDReport(){
@@ -115,13 +116,11 @@ void sendHIDReport(){
     for(x = 3; x < 16; x++){
         buf[x] = pressed_keys[x-3];
     }
-    // snip write(hid_output, buf, HID_REPORT_SIZE);
     usleep(1000);
 
     if(media_keys != last_media_keys){
         buf[0] = 2; // report id
         buf[1] = media_keys; // media keys
-        // snip write(hid_output, buf, 2);
         usleep(1000);
         last_media_keys = media_keys;
     }
@@ -133,7 +132,6 @@ void sendMouseReport(){
     buf[1] = mouse_buttons;
     buf[2] = mouse_x;
     buf[3] = mouse_y;
-    // snip write(hid_output, buf, MOUSE_REPORT_SIZE + 1);
     usleep(1000);
 }
 
@@ -216,7 +214,6 @@ static int l_save(lua_State *L) {
         fclose(fd);
     }
 
-    //lua_pushboolean(L, 1);
     free(filepath);
     return 0;
 }
@@ -224,9 +221,8 @@ static int l_save(lua_State *L) {
 static int l_serial_read(lua_State *L) {
     int nargs = lua_gettop(L);
     lua_pop(L, nargs);
-    const char *data = ""; // snip serial_read();
+    const char *data = "";
     lua_pushstring(L, data);
-    //free(data);
     return 1;
 }
 
@@ -238,7 +234,6 @@ static int l_serial_write(lua_State *L) {
 
     lua_pop(L, nargs);
 
-    // snip lua_pushnumber(L, serial_write(data, length));
     lua_pushnumber(L, length);
     return 1;
 }
@@ -367,13 +362,11 @@ static int l_auto_lights(lua_State *L) {
     int nargs = lua_gettop(L);
     unsigned short state = lua_toboolean(L, 1);
     lua_pop(L, nargs);
-    // snip lights_auto = state;
     return 0;
 }
 
 static int l_clear_lights(lua_State *L) {
     int nargs = lua_gettop(L);
-    // snip - lights_setAll(0, 0, 0);
     lua_pop(L, nargs);
     return 0;
 }
@@ -389,7 +382,6 @@ static int l_set_pixel(lua_State *L) {
     keybow_key key = get_key(x);
     x = key.led_index;
 
-    // snip - lights_setPixel(x, r, g, b);
     return 0;
 }
 

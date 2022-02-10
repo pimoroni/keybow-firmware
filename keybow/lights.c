@@ -1,5 +1,26 @@
 #include "lights.h"
 
+char buf[BUF_SIZE];
+
+int x, y;
+
+int width, height;
+png_byte color_type;
+png_byte bit_depth;
+png_byte color_channels;
+
+png_structp png_ptr;
+png_infop info_ptr;
+int number_of_passes;
+png_bytep * row_pointers;
+
+int lights_auto;
+int lights_running;
+
+pthread_t t_run_lights;
+pthread_mutex_t lights_mutex;
+
+
 unsigned long long millis(){
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -84,6 +105,8 @@ int read_png_file(char* file_name)
 }
 
 int initLights() {
+    lights_auto = 1;
+
     bcm2835_init();
     bcm2835_spi_begin();
     bcm2835_spi_set_speed_hz(SPI_SPEED_HZ);
@@ -100,7 +123,53 @@ int initLights() {
         buf[x] = 255;
     }
 
+    pthread_mutex_init ( &lights_mutex, NULL );
+
     return 0;
+}
+
+void *lights_run(void *void_ptr){
+    lights_running = 1;
+    while(lights_running){
+        int delta = (millis() / (1000/60)) % height;
+        if (lights_auto) {
+            pthread_mutex_lock( &lights_mutex );
+            lights_drawPngFrame(delta);
+            pthread_mutex_unlock( &lights_mutex );
+        }
+        lights_show();
+        usleep(16666); // About 60fps
+    }
+    return NULL;
+}
+
+int lights_start() {
+    if(pthread_create(&t_run_lights, NULL, lights_run, NULL)) {
+        printf("Error creating lighting thread.\n");
+        return 1;
+    }
+    return 0;
+}
+
+void lights_lock() {
+    pthread_mutex_lock(&lights_mutex);
+}
+
+void lights_unlock() {
+    pthread_mutex_unlock(&lights_mutex);
+}
+
+int lights_getWidth() {
+    return width;
+}
+
+int lights_getHeight() {
+    return height;
+}
+
+void lights_stop() {
+    lights_running = 0;
+    pthread_join(t_run_lights, NULL);
 }
 
 void lights_setPixel(int x, int r, int g, int b){
