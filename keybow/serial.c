@@ -34,7 +34,7 @@ int serial_open(){
         printf("Open success\n");
         tcgetattr(port_fd, &termios);
         termios.c_lflag &= ~ICANON;
-        termios.c_cc[VTIME] = 10;
+        termios.c_cc[VTIME] = 1;
         termios.c_cc[VMIN] = 0;
         tcsetattr(port_fd, TCSANOW, &termios);
     }
